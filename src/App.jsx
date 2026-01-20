@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Layout from './pages/Layout'; // Correct path from src to src/pages
 import Login from './pages/Login';
 import UserManage from './pages/UserManage'; // Import the UserManage component
+import Complaint from './pages/Complaint';
 
 // Temporary components for testing
 const Dashboard = () => <div className="p-4 text-2xl font-bold">Dashboard View</div>;
@@ -18,6 +19,7 @@ function App() {
 				<Route path="/layout/*" element={<Layout />}>
 					<Route path="dashboard" element={<Dashboard />} />
 					<Route path='userManagement' element={<UserManage />} />
+					<Route path='complaint' element={<Complaint />} />
 				</Route>
 			</Routes>
 		</Router>

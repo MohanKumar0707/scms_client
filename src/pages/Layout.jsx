@@ -25,6 +25,7 @@ function Layout() {
 	const navItems = [
 		{ name: 'Dashboard', path: '/layout/dashboard', icon: <LayoutDashboard size={20} /> },
 		{ name: 'User Management', path: '/layout/userManagement', icon: <UserCircle size={20} /> },
+		{ name: 'Complaint', path: '/layout/complaint', icon: <UserCircle size={20} /> },
 		{ name: 'Tracking', path: '/tracking', icon: <Search size={20} /> },
 	];
 
