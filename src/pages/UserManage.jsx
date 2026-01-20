@@ -1,35 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-// Professional Dashboard Variation
 const UltraProTable = () => {
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [stats, setStats] = useState([
+    { label: "Total Members", value: 0, color: "#6366F1" },
+    { label: "Active Now", value: 0, color: "#10B981" },
+    { label: "Pending", value: 0, color: "#F59E0B" },
+  ]);
 
-  const stats = [
-    { label: "Total Members", value: "4,250", change: "+12%", color: "#6366F1" },
-    { label: "Active Now", value: "125", change: "Live", color: "#10B981" },
-    { label: "Pending", value: "12", change: "-2%", color: "#F59E0B" },
-  ];
+  // Fetch users from backend
+  useEffect(() => {
+    fetch("http://localhost:5000/api/users")
+      .then(res => res.json())
+      .then(data => setUsers(data))
+      .catch(err => console.error(err));
+
+    fetch("http://localhost:5000/api/users/stats")
+      .then(res => res.json())
+      .then(data => {
+        setStats([
+          { label: "Total Members", value: data.total, color: "#6366F1" },
+          { label: "Active Now", value: data.active, color: "#10B981" },
+          { label: "Pending", value: data.pending, color: "#F59E0B" },
+        ]);
+      })
+      .catch(err => console.error(err));
+  }, []);
+
+  console.log(users)
 
   return (
     <div style={xp.wrapper}>
-      {/* 1. Stats Row */}
+      {/* Stats Row */}
       <div style={xp.statsGrid}>
         {stats.map((s, i) => (
           <div key={i} style={xp.statCard}>
             <span style={xp.statLabel}>{s.label}</span>
             <div style={xp.statValueRow}>
               <span style={xp.statValue}>{s.value}</span>
-              <span style={{...xp.statBadge, color: s.color}}>{s.change}</span>
+              <span style={{ ...xp.statBadge, color: s.color }}> {/* You can add % changes if needed */}</span>
             </div>
           </div>
         ))}
       </div>
 
+      {/* User Table */}
       <div style={xp.tableCard}>
-        {/* 2. Header with dynamic actions */}
         <div style={xp.tableHeader}>
           <div style={xp.searchBox}>
-            <input type="text" placeholder="Filter by name, role, or email..." style={xp.searchInput} />
+            <input
+              type="text"
+              placeholder="Filter by name, role, or email..."
+              style={xp.searchInput}
+            />
           </div>
           <div style={xp.actions}>
             {selectedUsers.length > 0 ? (
@@ -40,7 +64,6 @@ const UltraProTable = () => {
           </div>
         </div>
 
-        {/* 3. The Table */}
         <table style={xp.table}>
           <thead>
             <tr style={xp.thRow}>
@@ -53,9 +76,16 @@ const UltraProTable = () => {
             </tr>
           </thead>
           <tbody>
-            <UserRow name="Dianne Russell" email="dianne.r@example.com" status="Active" role="Admin" last="2 mins ago" />
-            <UserRow name="Guy Hawkins" email="guy.h@example.com" status="Inactive" role="Editor" last="4 hours ago" />
-            <UserRow name="Kristin Watson" email="k.watson@example.com" status="Pending" role="Viewer" last="Never" />
+            {users.map(user => (
+              <UserRow
+                key={user._id}
+                name={user.name}
+                email={user.email}
+                status={user.status}
+                role={user.role}
+                last={new Date(user.updatedAt).toLocaleString()}
+              />
+            ))}
           </tbody>
         </table>
       </div>
@@ -77,7 +107,17 @@ const UserRow = ({ name, email, status, role, last }) => (
     </td>
     <td style={xp.td}>
       <div style={xp.indicatorRow}>
-        <div style={{...xp.dot, backgroundColor: status === 'Active' ? '#10B981' : '#94A3B8'}} />
+        <div
+          style={{
+            ...xp.dot,
+            backgroundColor:
+              status === "active"
+                ? "#10B981"
+                : status === "inactive"
+                ? "#94A3B8"
+                : "#EF4444"
+          }}
+        />
         <span style={xp.statusText}>{status}</span>
       </div>
     </td>
@@ -86,7 +126,6 @@ const UserRow = ({ name, email, status, role, last }) => (
     <td style={xp.td}><button style={xp.moreBtn}>•••</button></td>
   </tr>
 );
-
 const xp = {
   wrapper: { padding: "32px", backgroundColor: "#F8FAFC", minHeight: "100vh", fontFamily: 'Inter, system-ui, sans-serif' },
   statsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", marginBottom: "32px" },
@@ -116,3 +155,5 @@ const xp = {
 };
 
 export default UltraProTable;
+
+
