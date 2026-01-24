@@ -20,7 +20,7 @@ function Layout() {
 		};
 		document.getElementById('main-viewport')?.addEventListener('scroll', handleScroll);
 		return () => document.getElementById('main-viewport')?.removeEventListener('scroll', handleScroll);
-	}, []);
+	}, []); 
 
 	const navItems = [
 		{ name: 'Dashboard', path: '/layout/dashboard', icon: <LayoutDashboard size={20} /> },
