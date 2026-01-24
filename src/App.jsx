@@ -1,14 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Layout from './pages/Layout'; // Correct path from src to src/pages
+import Layout from './pages/Layout';
 import Login from './pages/Login';
-import UserManage from './pages/UserManage'; // Import the UserManage component
+import UserManage from './pages/UserManage';
 import Complaint from './pages/Complaint';
-
-// Temporary components for testing
-const Dashboard = () => <div className="p-4 text-2xl font-bold">Dashboard View</div>;
-const Register = () => <div className="p-4 text-2xl font-bold">New Complaint Form</div>;
-const Tracking = () => <div className="p-4 text-2xl font-bold">Tracking Table</div>;
+import Track from './pages/Track';
 
 function App() {
 
@@ -17,9 +13,9 @@ function App() {
 			<Routes>
 				<Route path="/" element={<Login />} />
 				<Route path="/layout/*" element={<Layout />}>
-					<Route path="dashboard" element={<Dashboard />} />
 					<Route path='userManagement' element={<UserManage />} />
 					<Route path='complaint' element={<Complaint />} />
+					<Route path='track' element={<Track />} />
 				</Route>
 			</Routes>
 		</Router>

@@ -26,7 +26,7 @@ function Layout() {
 		{ name: 'Dashboard', path: '/layout/dashboard', icon: <LayoutDashboard size={20} /> },
 		{ name: 'User Management', path: '/layout/userManagement', icon: <UserCircle size={20} /> },
 		{ name: 'Complaint', path: '/layout/complaint', icon: <UserCircle size={20} /> },
-		{ name: 'Tracking', path: '/tracking', icon: <Search size={20} /> },
+		{ name: 'Tracking', path: '/layout/track', icon: <Search size={20} /> },
 	];
 
 	const getPageTitle = () => {
@@ -109,7 +109,7 @@ function Layout() {
 					</div>
 
 					<button
-						onClick={() => navigate('/login')}
+						onClick={() => navigate('/')}
 						className="flex items-center gap-3 w-full px-4 py-4 rounded-2xl text-indigo-300 hover:text-red-400 hover:bg-red-500/10 transition-all text-sm font-bold group"
 					>
 						<LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
