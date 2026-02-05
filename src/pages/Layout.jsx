@@ -13,7 +13,6 @@ function Layout() {
 	const location = useLocation();
 	const navigate = useNavigate();
 
-	// Handle header shadow on scroll
 	useEffect(() => {
 		const handleScroll = (e) => {
 			setIsScrolled(e.target.scrollTop > 10);
@@ -120,60 +119,6 @@ function Layout() {
 
 			{/* Main Content Area */}
 			<div className="flex-1 flex flex-col min-w-0 relative">
-
-				{/* TOP NAVBAR: Adaptive Design */}
-				<header className={`
-					h-20 flex items-center justify-between px-6 lg:px-10 z-30 transition-all duration-300
-					${isScrolled ? 'bg-white/80 backdrop-blur-lg border-b border-slate-200 shadow-sm' : 'bg-transparent'}
-				`}>
-					<div className="flex items-center gap-5">
-						<button
-							className="lg:hidden p-3 text-slate-600 bg-white rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition-all"
-							onClick={() => setIsMobileMenuOpen(true)}
-						>
-							<Menu size={20} />
-						</button>
-
-						<div className="hidden sm:block">
-							<h1 className="text-xl font-black text-slate-900 tracking-tight">{getPageTitle()}</h1>
-							<div className="flex items-center gap-2 mt-0.5">
-								<div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-								<span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Live System Portal</span>
-							</div>
-						</div>
-					</div>
-
-					<div className="flex items-center gap-4 md:gap-8">
-						{/* Elegant Search Input */}
-						<div className="hidden md:flex items-center bg-white border border-slate-200 rounded-2xl px-5 py-2.5 w-80 focus-within:ring-4 focus-within:ring-indigo-500/5 focus-within:border-indigo-500 transition-all duration-300 shadow-sm shadow-slate-200/50">
-							<SearchIcon size={16} className="text-slate-400" />
-							<input type="text" placeholder="Search for tickets, help..." className="bg-transparent border-none focus:ring-0 text-sm w-full ml-3 text-slate-800 font-medium" />
-						</div>
-
-						<div className="flex items-center gap-2">
-							<button className="p-3 text-slate-400 hover:text-indigo-600 hover:bg-white rounded-2xl transition-all relative border border-transparent hover:border-slate-100 shadow-none hover:shadow-sm">
-								<Bell size={20} />
-								<span className="absolute top-3 right-3 w-2.5 h-2.5 bg-indigo-600 rounded-full border-2 border-white"></span>
-							</button>
-							<button className="hidden sm:block p-3 text-slate-400 hover:text-indigo-600 hover:bg-white rounded-2xl transition-all border border-transparent hover:border-slate-100">
-								<Settings size={20} />
-							</button>
-						</div>
-
-						<div className="h-10 w-[1px] bg-slate-200 hidden md:block"></div>
-
-						{/* Profile Action Area */}
-						<div className="flex items-center gap-3.5 pl-2 group cursor-pointer">
-							<div className="hidden lg:block text-right">
-								<p className="text-sm font-black text-slate-900 leading-none group-hover:text-indigo-600 transition-colors">Alex Rivera</p>
-								<p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">Computer Science Dept</p>
-							</div>
-							<div className="h-12 w-12 rounded-[1.25rem] bg-gradient-to-br from-indigo-50 to-white border-2 border-white shadow-md group-hover:shadow-indigo-100 group-hover:border-indigo-500 transition-all flex items-center justify-center text-indigo-600 overflow-hidden">
-								<UserCircle size={32} strokeWidth={1.5} />
-							</div>
-						</div>
-					</div>
-				</header>
 
 				{/* CONTENT VIEWPORT: Smooth Scrolling & Dynamic Spacing */}
 				<main id="main-viewport" className="flex-1 overflow-y-auto p-6 lg:p-10 scroll-smooth">
