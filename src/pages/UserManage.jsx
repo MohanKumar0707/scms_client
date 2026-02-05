@@ -1,267 +1,286 @@
 import React, { useState, useEffect } from "react";
-import { Search, Plus, Trash2, Edit3, X, Mail, Shield, User } from "lucide-react";
+import { Search, Plus, Trash2, Edit3, X, Mail, Shield, User, Phone, BookOpen } from "lucide-react";
 
-const UserManage = () => {
-	const [users, setUsers] = useState([]);
-	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [currentUser, setCurrentUser] = useState(null);
-	const [searchTerm, setSearchTerm] = useState("");
-	const [formData, setFormData] = useState({ name: "", email: "", role: "Member", status: "active" });
-	const [stats, setStats] = useState({ total: 0, active: 0, pending: 0 });
+const UltraProTable = () => {
+  const [users, setUsers] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  // Matches your Mongoose Schema exactly
+  const [formData, setFormData] = useState({ 
+    name: "", 
+    email: "", 
+    phone: "",
+    password: "", // Required for new users
+    role: "student", 
+    department: "",
+    semester: "" 
+  });
 
-	const fetchData = async () => {
-		try {
-			const res = await fetch("http://localhost:5000/api/users");
-			const data = await res.json();
-			setUsers(data);
-			setStats({
-				total: data.length,
-				active: data.filter(u => u.status === 'active').length,
-				pending: data.filter(u => u.status === 'pending').length
-			});
-		} catch (err) { console.error("Fetch error:", err); }
-	};
+  const fetchData = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/users");
+      const data = await res.json();
+      setUsers(data);
+    } catch (err) { console.error("Fetch error:", err); }
+  };
 
-	useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); }, []);
 
-	const handleOpenModal = (user = null) => {
-		if (user) {
-			setCurrentUser(user);
-			setFormData({ name: user.name, email: user.email, role: user.role, status: user.status });
-		} else {
-			setCurrentUser(null);
-			setFormData({ name: "", email: "", role: "Member", status: "active" });
-		}
-		setIsModalOpen(true);
-	};
+  const handleOpenModal = (user = null) => {
+    if (user) {
+      setCurrentUser(user);
+      setFormData({ 
+        name: user.name, 
+        email: user.email, 
+        phone: user.phone || "",
+        role: user.role, 
+        department: user.department,
+        semester: user.semester || "",
+        password: "" // Keep empty on edit unless you implement password change logic
+      });
+    } else {
+      setCurrentUser(null);
+      setFormData({ name: "", email: "", phone: "", password: "", role: "student", department: "", semester: "" });
+    }
+    setIsModalOpen(true);
+  };
 
-	const handleDelete = async (id) => {
-		if (!window.confirm("Permanent action: Delete this member?")) return;
-		try {
-			await fetch(`http://localhost:5000/api/users/${id}`, { method: "DELETE" });
-			setUsers(users.filter((u) => u._id !== id));
-		} catch (err) { console.error(err); }
-	};
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this user permanently?")) return;
+    try {
+      await fetch(`http://localhost:5000/api/users/${id}`, { method: "DELETE" });
+      setUsers(users.filter((u) => u._id !== id));
+    } catch (err) { console.error(err); }
+  };
 
-	const filteredUsers = users.filter(u =>
-		u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-		u.email.toLowerCase().includes(searchTerm.toLowerCase())
-	);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const method = currentUser ? "PUT" : "POST";
+    const url = currentUser 
+      ? `http://localhost:5000/api/users/${currentUser._id}` 
+      : "http://localhost:5000/api/users";
 
-	return (
-		<div className="min-h-screen bg-[#F9FAFB] p-4 md:p-10 font-sans antialiased text-slate-900">
-			<div className="max-w-7xl mx-auto">
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (res.ok) {
+        fetchData();
+        setIsModalOpen(false);
+      }
+    } catch (err) { console.error("Submit error:", err); }
+  };
 
-				{/* Header Section */}
-				<div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
-					<div>
-						<h1 className="text-3xl font-bold tracking-tight text-slate-900">Team Members</h1>
-						<p className="text-slate-500 mt-2 text-sm md:text-base">Manage your team's access levels and workspace permissions.</p>
-					</div>
-					<div className="flex items-center gap-3">
-						<button
-							onClick={() => handleOpenModal()}
-							className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-sm shadow-indigo-200"
-						>
-							<Plus size={16} strokeWidth={3} /> Invite Member
-						</button>
-					</div>
-				</div>
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] p-6 md:p-10 font-sans text-slate-900">
+      <div className="max-w-7xl mx-auto">
+        
+        {/* Header */}
+        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-slate-900">User Directory</h1>
+            <p className="text-slate-500 text-sm">Manage students, staff, and administrators.</p>
+          </div>
+          <button
+            onClick={() => handleOpenModal()}
+            className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-100"
+          >
+            <Plus size={18} strokeWidth={3} /> Add User
+          </button>
+        </div>
 
-				{/* Stats Grid */}
-				<div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-					<StatCard label="Total Users" value={stats.total} trend="+12%" />
-					<StatCard label="Active Licenses" value={stats.active} trend="Stable" />
-					<StatCard label="Pending Invites" value={stats.pending} trend="-2%" />
-				</div>
+        {/* Search & Table */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-slate-100">
+            <div className="relative max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <input
+                type="text"
+                placeholder="Search by name, email, or dept..."
+                className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500/20 outline-none"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
 
-				{/* Table Container */}
-				<div className="bg-white rounded-xl border border-slate-200 shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden">
-					<div className="px-6 py-4 border-b border-slate-100 bg-white flex items-center gap-4">
-						<div className="relative flex-1 max-w-sm">
-							<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-							<input
-								type="text"
-								placeholder="Search by name or email..."
-								className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
-								value={searchTerm}
-								onChange={(e) => setSearchTerm(e.target.value)}
-							/>
-						</div>
-					</div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-slate-50/50 border-b border-slate-100">
+                  <th className="px-6 py-4 text-[11px] font-bold uppercase text-slate-500 tracking-wider">User</th>
+                  <th className="px-6 py-4 text-[11px] font-bold uppercase text-slate-500 tracking-wider">Department</th>
+                  <th className="px-6 py-4 text-[11px] font-bold uppercase text-slate-500 tracking-wider">Role</th>
+                  <th className="px-6 py-4 text-[11px] font-bold uppercase text-slate-500 tracking-wider text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {users.filter(u => u.name.toLowerCase().includes(searchTerm.toLowerCase())).map((user) => (
+                  <UserRow 
+                    key={user._id} 
+                    user={user} 
+                    onEdit={() => handleOpenModal(user)} 
+                    onDelete={() => handleDelete(user._id)} 
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-					<div className="overflow-x-auto">
-						<table className="w-full text-left">
-							<thead>
-								<tr className="bg-slate-50/50 border-b border-slate-100">
-									<th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-slate-500">Member Details</th>
-									<th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-slate-500">Status</th>
-									<th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-slate-500">Access Role</th>
-									<th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-slate-500 text-right">Settings</th>
-								</tr>
-							</thead>
-							<tbody className="divide-y divide-slate-100">
-								{filteredUsers.map((user) => (
-									<UserRow
-										key={user._id}
-										user={user}
-										onEdit={() => handleOpenModal(user)}
-										onDelete={() => handleDelete(user._id)}
-									/>
-								))}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
+      {/* MODAL */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 animate-in fade-in zoom-in duration-200">
+            <div className="p-6 flex justify-between items-center border-b border-slate-100">
+              <h3 className="text-xl font-bold text-slate-800">{currentUser ? "Edit User" : "Register New User"}</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 rounded-md">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 uppercase">Full Name</label>
+                  <input
+                    required
+                    className="w-full px-4 py-2 rounded-lg border border-slate-200 outline-none focus:border-indigo-500 transition-all text-sm"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 uppercase">Phone</label>
+                  <input
+                    className="w-full px-4 py-2 rounded-lg border border-slate-200 outline-none focus:border-indigo-500 transition-all text-sm"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  />
+                </div>
+              </div>
 
-			{/* Modern Slide-up/Fade Modal */}
-			{isModalOpen && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-[2px] p-4">
-					<div className="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 animate-in fade-in slide-in-from-bottom-4 duration-300">
-						<div className="p-6 flex justify-between items-center border-b border-slate-100">
-							<div className="flex items-center gap-3">
-								<div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
-									<User size={20} />
-								</div>
-								<h3 className="text-lg font-bold text-slate-800">{currentUser ? "Update Member" : "New Member Invite"}</h3>
-							</div>
-							<button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 rounded-md transition-all">
-								<X size={20} />
-							</button>
-						</div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-700 uppercase">Email Address</label>
+                <input
+                  required
+                  type="email"
+                  className="w-full px-4 py-2 rounded-lg border border-slate-200 outline-none focus:border-indigo-500 transition-all text-sm"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+              </div>
 
-						<form onSubmit={(e) => { e.preventDefault(); /* logic here */ }} className="p-6 space-y-5">
-							<div className="space-y-1">
-								<label className="text-[13px] font-semibold text-slate-700">Display Name</label>
-								<input
-									className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all"
-									placeholder="e.g. John Doe"
-									value={formData.name}
-									onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-								/>
-							</div>
+              {!currentUser && (
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 uppercase">Password</label>
+                  <input
+                    required
+                    type="password"
+                    className="w-full px-4 py-2 rounded-lg border border-slate-200 outline-none focus:border-indigo-500 transition-all text-sm"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  />
+                </div>
+              )}
 
-							<div className="space-y-1">
-								<label className="text-[13px] font-semibold text-slate-700">Email Address</label>
-								<div className="relative">
-									<Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-									<input
-										type="email"
-										className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all"
-										placeholder="john@company.com"
-										value={formData.email}
-										onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-									/>
-								</div>
-							</div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 uppercase">Role</label>
+                  <select
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none"
+                    value={formData.role}
+                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  >
+                    <option value="student">Student</option>
+                    <option value="staff">Staff</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 uppercase">Dept</label>
+                  <input
+                    required
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none"
+                    placeholder="e.g. CS"
+                    value={formData.department}
+                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 uppercase">Semester</label>
+                  <input
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none"
+                    placeholder="e.g. 4th"
+                    value={formData.semester}
+                    onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
+                  />
+                </div>
+              </div>
 
-							<div className="grid grid-cols-2 gap-4">
-								<div className="space-y-1">
-									<label className="text-[13px] font-semibold text-slate-700">Role</label>
-									<select
-										className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 outline-none focus:bg-white transition-all text-sm"
-										value={formData.role}
-										onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-									>
-										<option>Admin</option>
-										<option>Member</option>
-										<option>Editor</option>
-									</select>
-								</div>
-								<div className="space-y-1">
-									<label className="text-[13px] font-semibold text-slate-700">Account Status</label>
-									<select
-										className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 outline-none focus:bg-white transition-all text-sm"
-										value={formData.status}
-										onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-									>
-										<option value="active">Active</option>
-										<option value="pending">Pending</option>
-										<option value="inactive">Disabled</option>
-									</select>
-								</div>
-							</div>
-
-							<div className="pt-4 flex gap-3">
-								<button
-									type="button"
-									onClick={() => setIsModalOpen(false)}
-									className="flex-1 px-4 py-2.5 rounded-lg font-bold text-sm text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all"
-								>
-									Cancel
-								</button>
-								<button
-									type="submit"
-									className="flex-1 px-4 py-2.5 rounded-lg bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition-all shadow-lg shadow-slate-200"
-								>
-									{currentUser ? "Save Changes" : "Send Invite"}
-								</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			)}
-		</div>
-	);
+              <div className="pt-4 flex gap-3">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 font-bold text-sm text-slate-600 hover:bg-slate-50 transition-all">
+                  Cancel
+                </button>
+                <button type="submit" className="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition-all shadow-lg shadow-slate-200">
+                  {currentUser ? "Save Changes" : "Create Account"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
-// --- Sub-components with Professional Polish ---
-
-const StatCard = ({ label, value, trend }) => (
-	<div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
-		<div className="flex justify-between items-start">
-			<div>
-				<p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{label}</p>
-				<p className="text-3xl font-bold text-slate-900 mt-2">{value}</p>
-			</div>
-			<span className={`text-[10px] font-bold px-2 py-1 rounded-full ${trend.includes('+') ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>
-				{trend}
-			</span>
-		</div>
-		<div className="absolute bottom-0 left-0 h-1 w-0 bg-indigo-500 transition-all duration-500 group-hover:w-full" />
-	</div>
-);
-
 const UserRow = ({ user, onEdit, onDelete }) => (
-	<tr className="hover:bg-slate-50/50 transition-all">
-		<td className="px-6 py-4">
-			<div className="flex items-center gap-3">
-				<div className="h-9 w-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-xs ring-2 ring-white shadow-sm">
-					{user.name?.charAt(0)}
-				</div>
-				<div>
-					<p className="font-semibold text-slate-900 text-sm leading-tight">{user.name}</p>
-					<p className="text-xs text-slate-500 mt-0.5">{user.email}</p>
-				</div>
-			</div>
-		</td>
-		<td className="px-6 py-4">
-			<span className={`inline-flex items-center px-2 py-1 rounded-md text-[11px] font-bold border ${user.status === 'active'
-					? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-					: 'bg-slate-50 text-slate-500 border-slate-200'
-				}`}>
-				<span className={`h-1.5 w-1.5 rounded-full mr-1.5 ${user.status === 'active' ? 'bg-emerald-500' : 'bg-slate-400'}`} />
-				{user.status.toUpperCase()}
-			</span>
-		</td>
-		<td className="px-6 py-4">
-			<div className="flex items-center gap-1.5 text-slate-600">
-				<Shield size={14} className="text-slate-400" />
-				<span className="text-sm font-medium">{user.role}</span>
-			</div>
-		</td>
-		<td className="px-6 py-4 text-right">
-			<div className="flex justify-end items-center gap-1">
-				<button onClick={onEdit} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-all">
-					<Edit3 size={16} />
-				</button>
-				<button onClick={onDelete} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all">
-					<Trash2 size={16} />
-				</button>
-			</div>
-		</td>
-	</tr>
+  <tr className="hover:bg-slate-50/50 transition-all group">
+    <td className="px-6 py-4">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs">
+          {user.name?.charAt(0)}
+        </div>
+        <div>
+          <p className="font-bold text-slate-900 text-sm">{user.name}</p>
+          <div className="flex items-center gap-2 text-[11px] text-slate-500">
+             <span className="flex items-center gap-1"><Mail size={10}/>{user.email}</span>
+             {user.phone && <span className="flex items-center gap-1"><Phone size={10}/>{user.phone}</span>}
+          </div>
+        </div>
+      </div>
+    </td>
+    <td className="px-6 py-4">
+      <div className="flex flex-col">
+        <span className="text-sm font-semibold text-slate-700 uppercase tracking-tight">{user.department}</span>
+        {user.semester && <span className="text-[10px] text-slate-400">Semester: {user.semester}</span>}
+      </div>
+    </td>
+    <td className="px-6 py-4">
+      <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-widest ${
+        user.role === 'admin' ? 'bg-red-50 text-red-600 border border-red-100' : 
+        user.role === 'staff' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 
+        'bg-emerald-50 text-emerald-600 border border-emerald-100'
+      }`}>
+        {user.role}
+      </span>
+    </td>
+    <td className="px-6 py-4 text-right">
+      <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button onClick={onEdit} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
+          <Edit3 size={16} />
+        </button>
+        <button onClick={onDelete} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
+          <Trash2 size={16} />
+        </button>
+      </div>
+    </td>
+  </tr>
 );
 
-export default UserManage;
+export default UltraProTable;
