@@ -6,7 +6,7 @@ const UserManage = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [currentUser, setCurrentUser] = useState(null);
 	const [searchTerm, setSearchTerm] = useState("");
-
+	const [deleteId, setDeleteId] = useState(null); // Tracks ID of user to be deleted
 	// Initial State including all Mongoose fields
 	const initialFormState = {
 		registerNo: "",
@@ -79,7 +79,21 @@ const UserManage = () => {
 			}
 		} catch (err) { console.error("Submit error:", err); }
 	};
+	// This just opens our custom modal
+	const confirmDelete = (id) => {
+		setDeleteId(id);
+	};
 
+	// This performs the actual API call
+	const handleFinalDelete = async () => {
+		try {
+			await fetch(`http://localhost:5000/api/users/${deleteId}`, { method: "DELETE" });
+			setDeleteId(null); // Close modal
+			fetchData(); // Refresh list
+		} catch (err) {
+			console.error("Delete error:", err);
+		}
+	};
 	return (
 		<div className="min-h-screen bg-slate-50 font-sans text-slate-900">
 			<header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
@@ -135,7 +149,7 @@ const UserManage = () => {
 											key={user._id}
 											user={user}
 											onEdit={() => handleOpenModal(user)}
-											onDelete={() => handleDelete(user._id)}
+											onDelete={() => confirmDelete(user._id)}
 										/>
 									))}
 							</tbody>
@@ -268,6 +282,38 @@ const UserManage = () => {
 					</div>
 				</div>
 			)}
+			{/* Custom Delete Confirmation Modal */}
+{deleteId && (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div className="bg-white w-full max-w-md rounded-xl shadow-2xl border border-slate-200 p-6">
+            <div className="flex items-center gap-4 mb-4 text-rose-600">
+                <div className="p-3 bg-rose-50 rounded-full">
+                    <Trash2 size={24} />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900">Confirm Deletion</h3>
+            </div>
+            
+            <p className="text-sm text-slate-500 mb-8">
+                Are you sure you want to delete this record? This action is permanent and cannot be undone.
+            </p>
+
+            <div className="flex gap-3">
+                <button 
+                    onClick={() => setDeleteId(null)}
+                    className="flex-1 px-4 py-2.5 rounded-lg border border-slate-200 font-bold text-sm text-slate-600 hover:bg-slate-100 transition-all"
+                >
+                    No, Cancel
+                </button>
+                <button 
+                    onClick={handleFinalDelete}
+                    className="flex-1 px-4 py-2.5 rounded-lg bg-rose-600 text-white font-bold text-sm hover:bg-rose-700 transition-all shadow-sm"
+                >
+                    Yes, Delete User
+                </button>
+            </div>
+        </div>
+    </div>
+)}
 		</div>
 	);
 };
