@@ -1,19 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, GraduationCap, ArrowRight, ShieldCheck, HelpCircle, Lock, UserPlus, ArrowLeft, Mail, Phone, BookOpen, User } from "lucide-react";
+import { Eye, EyeOff, GraduationCap, ArrowRight, ShieldCheck, LogIn, Lock, UserPlus, ArrowLeft, Mail, Phone, BookOpen, User } from "lucide-react";
 
 function AuthPortal() {
+
     const [isLogin, setIsLogin] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
+
         e.preventDefault();
         setIsLoading(true);
 
         const formData = new FormData(e.target);
-
         const payload = {
             registerNo: formData.get("registerNo"),
             name: formData.get("name"),
@@ -25,6 +26,7 @@ function AuthPortal() {
         };
 
         try {
+
             const res = await fetch("http://localhost:5000/api/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -40,12 +42,15 @@ function AuthPortal() {
                 setIsLogin(true);
             }
         } catch (err) {
+            console.log('Error during register : ', err)
             alert("Server error");
         } finally {
             setIsLoading(false);
         }
     };
+
     const handleLogin = async (e) => {
+
         e.preventDefault();
         setIsLoading(true);
 
@@ -68,23 +73,18 @@ function AuthPortal() {
             if (!res.ok) {
                 alert(data.message);
             } else {
-                // STORE IN SESSION STORAGE
                 sessionStorage.setItem("name", data.user.name);
                 sessionStorage.setItem("phone", data.user.phone);
                 sessionStorage.setItem("role", data.user.role);
-
-                alert("Login successful");
-
-                // example redirect
                 navigate("/layout/dashboard");
             }
         } catch (err) {
+            console.log(err)
             alert("Server error");
         } finally {
             setIsLoading(false);
         }
     };
-
 
     return (
         <div className="min-h-screen bg-white">
@@ -104,7 +104,7 @@ function AuthPortal() {
                             <div className="bg-indigo-500 p-2.5 rounded-2xl">
                                 <GraduationCap size={28} />
                             </div>
-                            <span className="text-xl font-bold tracking-tight">UniServe</span>
+                            <span className="text-xl font-bold tracking-tight">StudentVoicePortal</span>
                         </div>
 
                         <h1 className="text-4xl md:text-5xl font-black leading-tight mb-6 mt-20 md:mt-32 transition-all duration-500">
@@ -130,7 +130,7 @@ function AuthPortal() {
 
                 {/* RIGHT PANEL */}
                 <div className="p-10 md:p-16 flex flex-col justify-center bg-white h-full relative">
-                    <div className="max-w-lg mx-auto w-full">
+                    <div className="mx-auto w-full">
 
                         {isLogin ? (
                             /* LOGIN FORM */
@@ -140,14 +140,14 @@ function AuthPortal() {
                                     <p className="text-slate-400 font-medium">Please enter your institutional credentials.</p>
                                 </div>
 
-                                <div className="space-y-5">
+                                <div className="space-y-8">
                                     <div className="group">
-                                        <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3 block ml-1">Student ID</label>
-                                        <input type="text" name="registerNo" required placeholder="2024-EDU-0123" className="w-full px-5 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl transition-all outline-none text-sm font-semibold" />
+                                        <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4 block ml-1">Register Number</label>
+                                        <input type="text" name="registerNo" required placeholder="24MCA69" className="w-full px-5 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl transition-all outline-none text-sm font-semibold" />
                                     </div>
 
                                     <div className="group">
-                                        <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3 block ml-1">Security Password</label>
+                                        <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4 block ml-1">Security Password</label>
                                         <div className="relative">
                                             <input type={showPassword ? "text" : "password"} name="password" required placeholder="••••••••" className="w-full px-5 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl transition-all outline-none text-sm font-semibold" />
                                             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-indigo-600">
@@ -156,17 +156,11 @@ function AuthPortal() {
                                         </div>
                                     </div>
 
-                                    <button disabled={isLoading} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-[0.99] shadow-xl shadow-indigo-100 mt-4">
+                                    <button disabled={isLoading} className="w-full mt-12 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-[0.99] shadow-xl shadow-indigo-100">
                                         {isLoading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <>Authorize & Access <ArrowRight size={20} /></>}
                                     </button>
 
-                                    <div className="relative flex items-center py-4">
-                                        <div className="flex-grow border-t border-slate-100"></div>
-                                        <span className="flex-shrink mx-4 text-slate-300 text-[10px] font-bold uppercase tracking-widest">New Student?</span>
-                                        <div className="flex-grow border-t border-slate-100"></div>
-                                    </div>
-
-                                    <button type="button" onClick={() => setIsLogin(false)} className="w-full bg-white border-2 border-slate-100 hover:border-indigo-100 hover:bg-indigo-50/30 text-slate-600 font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all">
+                                    <button type="button" onClick={() => setIsLogin(false)} className="w-full mt-6 bg-white border-2 border-slate-100 hover:border-indigo-100 hover:bg-indigo-50/30 text-slate-600 font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all">
                                         <UserPlus size={18} className="text-indigo-500" />
                                         Create New Account
                                     </button>
@@ -175,97 +169,95 @@ function AuthPortal() {
                         ) : (
                             /* UPDATED REGISTRATION FORM */
                             <form onSubmit={handleRegister} className="animate-in fade-in slide-in-from-left-4 duration-500">
-                                <button type="button" onClick={() => setIsLogin(true)} className="flex items-center gap-2 text-indigo-600 font-bold text-sm mb-6 hover:translate-x-[-4px] transition-transform">
-                                    <ArrowLeft size={18} /> Back to Login
-                                </button>
-
-                                <div className="mb-6">
+                                {/* Header Section */}
+                                <div className="mb-10">
                                     <h2 className="text-3xl font-black text-slate-900 mb-2">Create Account</h2>
-                                    <p className="text-slate-400 font-medium text-sm">Fill in your details to get started.</p>
+                                    <p className="text-slate-400 font-medium">Fill in your details to get started.</p>
                                 </div>
 
-                                <div className="space-y-4">
-                                    {/* Full Name Field */}
-                                    <div className="group">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Register number</label>
-                                        <div className="relative">
-                                            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-                                            <input type="text" name="registerNo" required placeholder="2024-EDU-0123" className="w-full pl-12 pr-5 py-3.5 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl transition-all outline-none text-sm font-semibold" />
+                                <div className="space-y-6">
+                                    {/* Row 1: Register No & Full Name */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="group">
+                                            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4 block ml-1">Register Number</label>
+                                            <div className="relative">
+                                                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                                                <input type="text" name="registerNo" required placeholder="24MCA069" className="w-full pl-12 pr-5 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl transition-all outline-none text-sm font-semibold" />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="group">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Full Name</label>
-                                        <div className="relative">
-                                            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-                                            <input type="text" name="name" required placeholder="John Doe" className="w-full pl-12 pr-5 py-3.5 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl transition-all outline-none text-sm font-semibold" />
+                                        <div className="group">
+                                            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4 block ml-1">Full Name</label>
+                                            <div className="relative">
+                                                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                                                <input type="text" name="name" required placeholder="Mohan Kumar" className="w-full pl-12 pr-5 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl transition-all outline-none text-sm font-semibold" />
+                                            </div>
                                         </div>
                                     </div>
 
+                                    {/* Row 2: Email & Phone */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {/* Email Field */}
                                         <div className="group">
-                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Email Address</label>
+                                            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4 block ml-1">Email Address</label>
                                             <div className="relative">
                                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-                                                <input type="email" name="email" required placeholder="john@uni.edu" className="w-full pl-12 pr-5 py-3.5 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl transition-all outline-none text-sm font-semibold" />
+                                                <input type="email" name="email" required placeholder="mohan@gmail.edu" className="w-full pl-12 pr-5 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl transition-all outline-none text-sm font-semibold" />
                                             </div>
                                         </div>
-                                        {/* Phone Field */}
                                         <div className="group">
-                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Phone Number</label>
+                                            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4 block ml-1">Phone Number</label>
                                             <div className="relative">
                                                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-                                                <input type="tel" name="phone" required placeholder="+1 (555) 000-0000" className="w-full pl-12 pr-5 py-3.5 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl transition-all outline-none text-sm font-semibold" />
+                                                <input type="tel" name="phone" required placeholder="+91 98941  23456" className="w-full pl-12 pr-5 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl transition-all outline-none text-sm font-semibold" />
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Department Dropdown */}
-                                    <div className="group">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Department</label>
-                                        <div className="relative">
-                                            <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-                                            <select name="department" required className="w-full pl-12 pr-5 py-3.5 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl transition-all outline-none text-sm font-semibold appearance-none cursor-pointer">
-                                                <option value="">Select Department</option>
-                                                <option value="cs">Computer Science & Engineering</option>
-                                                <option value="ee">Electrical Engineering</option>
-                                                <option value="me">Mechanical Engineering</option>
-                                                <option value="ba">Business Administration</option>
-                                            </select>
+                                    {/* Row 3: Department & Password */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="group">
+                                            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4 block ml-1">Department</label>
+                                            <div className="relative">
+                                                <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                                                <select name="department" required className="w-full pl-12 pr-5 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl transition-all outline-none text-sm font-semibold appearance-none cursor-pointer">
+                                                    <option value="">Select Department</option>
+                                                    <option value="cs">Computer Science & Engineering</option>
+                                                    <option value="ee">Electrical Engineering</option>
+                                                    <option value="me">Mechanical Engineering</option>
+                                                    <option value="ba">Business Administration</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="group">
+                                            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4 block ml-1">Create Password</label>
+                                            <div className="relative">
+                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                                                <input type="password" name="password" required placeholder="••••••••" className="w-full pl-12 pr-5 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl transition-all outline-none text-sm font-semibold" />
+                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* Password Field */}
-                                    <div className="group">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Create Password</label>
-                                        <div className="relative">
-                                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-                                            <input type="password" name="password"
-                                                required placeholder="••••••••" className="w-full pl-12 pr-5 py-3.5 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl transition-all outline-none text-sm font-semibold" />
-                                        </div>
-                                    </div>
+                                    {/* Submit Button */}
+                                    <button disabled={isLoading} className="w-full mt-8 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-[0.99] shadow-xl shadow-indigo-100">
+                                        {isLoading ? (
+                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        ) : (
+                                            <>Register Account <ArrowRight size={20} /></>
+                                        )}
+                                    </button>
 
-                                    <button disabled={isLoading} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-[0.99] shadow-xl shadow-indigo-100 mt-2">
-                                        {isLoading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <>Register Account <ArrowRight size={20} /></>}
+                                    {/* Back to Login Button */}
+                                    <button type="button" onClick={() => setIsLogin(true)} className="w-full mt-8 bg-white border-2 border-slate-100 hover:border-indigo-100 hover:bg-indigo-50/30 text-slate-600 font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all">
+                                        <LogIn size={18} className="text-indigo-500" />
+                                        Back to Login
                                     </button>
                                 </div>
                             </form>
                         )}
-
-                        {/* FOOTER */}
-                        <div className="mt-8 pt-8 border-t border-slate-100 flex justify-center gap-10">
-                            <button type="button" className="flex items-center gap-2 text-slate-400 hover:text-slate-600 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors">
-                                <HelpCircle size={16} /> Help Desk
-                            </button>
-                            <button type="button" className="flex items-center gap-2 text-slate-400 hover:text-slate-600 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors">
-                                <Lock size={16} /> Privacy Policy
-                            </button>
-                        </div>
                     </div>
                 </div>
 
             </div>
-        </div>
+        </div >
     );
 }
 
