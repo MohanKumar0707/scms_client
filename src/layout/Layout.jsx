@@ -8,22 +8,24 @@ import {
 } from 'lucide-react';
 
 function Layout() {
+
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
-    
-    // Retrieve the role from sessionStorage
     const userRole = sessionStorage.getItem("role") || "student"; 
 
     useEffect(() => {
         const handleScroll = (e) => {
-            // Optional scroll logic
+            if (e.target.scrollTop > 0) {
+                document.getElementById('main-viewport').classList.add('shadow');
+            } else {
+                document.getElementById('main-viewport').classList.remove('shadow');
+            }
         };
         document.getElementById('main-viewport')?.addEventListener('scroll', handleScroll);
         return () => document.getElementById('main-viewport')?.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Define all possible menu items organized by role
     const roleMenus = {
         student: [
             {
@@ -64,7 +66,6 @@ function Layout() {
         ]
     };
 
-    // Select the menu based on the current user's role
     const menuSections = roleMenus[userRole] || roleMenus['student'];
 
     const handleLogout = () => {
@@ -74,7 +75,6 @@ function Layout() {
 
     return (
         <div className="flex h-screen bg-[#F1F5F9] text-slate-900 font-sans overflow-hidden">
-            {/* Mobile Sidebar Overlay */}
             {isMobileMenuOpen && (
                 <div
                     className="fixed inset-0 bg-indigo-950/60 backdrop-blur-md z-40 lg:hidden transition-all duration-500"
@@ -116,7 +116,7 @@ function Layout() {
                                         to={item.path}
                                         onClick={() => setIsMobileMenuOpen(false)}
                                         className={({ isActive }) => `
-                                            group relative flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300
+                                            group relative flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 mb-2
                                             ${isActive
                                                 ? 'bg-white/10 text-white border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.1)] backdrop-blur-md'
                                                 : 'text-indigo-200/50 hover:text-white hover:bg-white/5'}
