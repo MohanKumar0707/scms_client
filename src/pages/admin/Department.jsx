@@ -5,6 +5,7 @@ import { Search, Plus, Trash2, Edit3, X, Briefcase, Hash, AlignLeft } from "luci
 const API_URL = 'http://localhost:5000/api/departments';
 
 const Department = () => {
+
     const [departments, setDepartments] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
@@ -102,13 +103,13 @@ const Department = () => {
                 {/* Table Container */}
                 <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left table-auto">
+                        <table className="w-full text-center table-auto">
                             <thead>
                                 <tr className="bg-slate-50 border-b border-slate-200">
                                     <th className="px-6 py-4 text-[11px] font-bold uppercase text-slate-500 tracking-widest">Code</th>
                                     <th className="px-6 py-4 text-[11px] font-bold uppercase text-slate-500 tracking-widest">Department Name</th>
                                     <th className="px-6 py-4 text-[11px] font-bold uppercase text-slate-500 tracking-widest">Description</th>
-                                    <th className="px-6 py-4 text-[11px] font-bold uppercase text-slate-500 tracking-widest text-center">Actions</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold uppercase text-slate-500 tracking-widest">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
@@ -127,7 +128,7 @@ const Department = () => {
                                                 <div className="font-bold text-slate-900 text-sm">{dept.name}</div>
                                             </td>
                                             <td className="px-6 py-5">
-                                                <div className="text-xs text-slate-500 max-w-xs truncate font-medium">
+                                                <div className="text-xs text-slate-500 truncate font-medium">
                                                     {dept.description || "No description provided."}
                                                 </div>
                                             </td>

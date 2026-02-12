@@ -5,6 +5,7 @@ import Login from './pages/common/Login';
 import UserManage from './pages/admin/UserManage';
 import Dashboard from './pages/common/Dashboard';
 import Department from './pages/admin/Department';
+import Category from './pages/admin/Category';
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
 					{/* Admin Routes */}
 					<Route path='userManagement' element={<UserManage />} />
 					<Route path='departments' element={<Department />} />
+					<Route path='categories' element={<Category />} />
 				</Route>
 			</Routes>
 		</Router>
