@@ -76,6 +76,7 @@ function AuthPortal() {
                 sessionStorage.setItem("name", data.user.name);
                 sessionStorage.setItem("phone", data.user.phone);
                 sessionStorage.setItem("role", data.user.role);
+                sessionStorage.setItem("registerNo", data.user.registerNo);
                 navigate("/layout/dashboard");
             }
         } catch (err) {

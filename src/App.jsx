@@ -6,6 +6,9 @@ import UserManage from './pages/admin/UserManage';
 import Dashboard from './pages/common/Dashboard';
 import Department from './pages/admin/Department';
 import Category from './pages/admin/Category';
+import Complaint from './pages/admin/Complaint';
+import RaiseComplaint from './pages/student/RaiseComplaint';
+import MyComplaints from './pages/student/MyComplaints';
 
 function App() {
 
@@ -21,6 +24,11 @@ function App() {
 					<Route path='userManagement' element={<UserManage />} />
 					<Route path='departments' element={<Department />} />
 					<Route path='categories' element={<Category />} />
+					<Route path='complaints' element={<Complaint />} />
+
+					{/* Student Routes */}
+					<Route path='raise-complaint' element={<RaiseComplaint />} />
+					<Route path='my-complaints' element={<MyComplaints />} />
 				</Route>
 			</Routes>
 		</Router>

@@ -58,7 +58,7 @@ function Layout() {
                     { name: 'Users', path: '/layout/userManagement', icon: <UserCircle size={20} /> },
                     { name: 'Departments', path: '/layout/departments', icon: <Building2 size={20} /> },
                     { name: 'Category', path: '/layout/categories', icon: <GraduationCap size={20} /> },
-                    { name: 'Complaints', path: '/layout/complaints-list', icon: <ClipboardList size={20} /> },
+                    { name: 'Complaints', path: '/layout/complaints', icon: <ClipboardList size={20} /> },
                     { name: 'Assign Complaints', path: '/layout/assign-complaints', icon: <ChevronRight size={20} /> },
                     { name: 'Reports', path: '/layout/reports', icon: <BarChart3 size={20} /> },
                     { name: 'Audit Logs', path: '/layout/audit-logs', icon: <ShieldCheck size={20} /> },
