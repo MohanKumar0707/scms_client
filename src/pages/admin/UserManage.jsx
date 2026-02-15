@@ -24,7 +24,7 @@ const UserManage = () => {
 
 	const fetchData = async () => {
 		try {
-			const res = await fetch("http://localhost:5000/api/users");
+			const res = await fetch("http://localhost:5000/api/userManage/fetchUsers");
 			const data = await res.json();
 			setUsers(data);
 		} catch (err) { console.error("Fetch error:", err); }
@@ -52,20 +52,11 @@ const UserManage = () => {
 		setIsModalOpen(true);
 	};
 
-	const handleDelete = async (id) => {
-		if (window.confirm("Are you sure you want to delete this user?")) {
-			try {
-				await fetch(`http://localhost:5000/api/users/${id}`, { method: "DELETE" });
-				fetchData();
-			} catch (err) { console.error("Delete error:", err); }
-		}
-	};
-
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		const url = currentUser
-			? `http://localhost:5000/api/users/${currentUser._id}`
-			: "http://localhost:5000/api/users";
+			? `http://localhost:5000/api/userManage/updateUser/${currentUser._id}`
+			: "http://localhost:5000/api/userManage/createUser";
 		const method = currentUser ? "PUT" : "POST";
 
 		try {
@@ -87,7 +78,7 @@ const UserManage = () => {
 
 	const handleFinalDelete = async () => {
 		try {
-			await fetch(`http://localhost:5000/api/users/${deleteId}`, { method: "DELETE" });
+			await fetch(`http://localhost:5000/api/userManage/deleteUser/${deleteId}`, { method: "DELETE" });
 			setDeleteId(null); 
 			fetchData(); 
 		} catch (err) {
