@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
-    LayoutDashboard, FilePlus, Search, LogOut,
+    LayoutDashboard, FilePlus, Search, LogOut,Tags, UserPlus,
     UserCircle, GraduationCap, ChevronRight, Menu, Bell,
-    Settings, Sparkles, MessageSquare, ClipboardList, 
+    Settings, Sparkles, MessageSquare, ClipboardList,
     CheckCircle2, Building2, ShieldCheck, BarChart3, ListChecks
 } from 'lucide-react';
 
@@ -12,7 +12,7 @@ function Layout() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
-    const userRole = sessionStorage.getItem("role") || "student"; 
+    const userRole = sessionStorage.getItem("role") || "student";
 
     useEffect(() => {
         const handleScroll = (e) => {
@@ -55,13 +55,13 @@ function Layout() {
                 group: "System Administration",
                 items: [
                     { name: 'Dashboard', path: '/layout/dashboard', icon: <LayoutDashboard size={20} /> },
-                    { name: 'Users', path: '/layout/userManagement', icon: <UserCircle size={20} /> },
-                    { name: 'Departments', path: '/layout/departments', icon: <Building2 size={20} /> },
-                    { name: 'Category', path: '/layout/categories', icon: <GraduationCap size={20} /> },
-                    { name: 'Complaints', path: '/layout/complaints', icon: <ClipboardList size={20} /> },
-                    { name: 'Assign Complaints', path: '/layout/assign-complaints', icon: <ChevronRight size={20} /> },
-                    { name: 'Reports', path: '/layout/reports', icon: <BarChart3 size={20} /> },
-                    { name: 'Audit Logs', path: '/layout/audit-logs', icon: <ShieldCheck size={20} /> },
+                    { name: 'User Directory', path: '/layout/userManagement', icon: <UserCircle size={20} /> },
+                    { name: 'Academic Units', path: '/layout/departments', icon: <Building2 size={20} /> },
+                    { name: 'Issue Categories', path: '/layout/categories', icon: <Tags size={20} /> },
+                    { name: 'Grievance Inbox', path: '/layout/complaints', icon: <ClipboardList size={20} /> },
+                    { name: 'Assign Tasks', path: '/layout/assign-complaints', icon: <UserPlus size={20} /> },
+                    { name: 'Analytics', path: '/layout/reports', icon: <BarChart3 size={20} /> },
+                    { name: 'System Logs', path: '/layout/audit-logs', icon: <ShieldCheck size={20} /> },
                 ]
             }
         ]
