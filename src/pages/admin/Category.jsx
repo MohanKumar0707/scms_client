@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Search, Plus, Trash2, Edit3, X, Tag, Layers, AlertCircle, List } from "lucide-react";
 
 const API_URL = 'http://localhost:5000/api/categories';
-const DEPT_API_URL = 'http://localhost:5000/api/departments/categories';
+const DEPT_API_URL = 'http://localhost:5000/api/categories';
 
 const Category = () => {
     const [categories, setCategories] = useState([]);
@@ -25,8 +25,8 @@ const Category = () => {
         setLoading(true);
         try {
             const [catRes, deptRes] = await Promise.all([
-                axios.get(API_URL),
-                axios.get(DEPT_API_URL)
+                axios.get(`${API_URL}/fetchcategories`),
+                axios.get(`${DEPT_API_URL}/fetchDepartments/categories`)
             ]);
             setCategories(catRes.data);
             setDepartments(deptRes.data);
@@ -56,9 +56,9 @@ const Category = () => {
         e.preventDefault();
         try {
             if (editingId) {
-                await axios.put(`${API_URL}/${editingId}`, formData);
+                await axios.put(`${ API_URL}/updatecategories/${editingId}`, formData);
             } else {
-                await axios.post(API_URL, formData);
+                await axios.post(`${ API_URL}/createcategories`, formData);
             }
             setIsModalOpen(false);
             fetchData();
@@ -69,7 +69,7 @@ const Category = () => {
 
     const handleFinalDelete = async () => {
         try {
-            await axios.delete(`${API_URL}/${deleteId}`);
+            await axios.delete(`${API_URL}/deletecategories/${deleteId}`);
             setDeleteId(null);
             fetchData();
         } catch (err) {

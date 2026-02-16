@@ -22,7 +22,7 @@ const Department = () => {
 
     const fetchDepartments = async () => {
         try {
-            const res = await axios.get(API_URL);
+            const res = await axios.get(`${API_URL}/fetchDepartments`);
             setDepartments(res.data);
             setLoading(false);
         } catch (err) {
@@ -46,9 +46,9 @@ const Department = () => {
         e.preventDefault();
         try {
             if (editingId) {
-                await axios.put(`${API_URL}/${editingId}`, formData);
+                await axios.put(`${API_URL}/updateDepartments/${editingId}`, formData);
             } else {
-                await axios.post(API_URL, formData);
+                await axios.post(`${API_URL}/createDepartments`, formData);
             }
             setIsModalOpen(false);
             fetchDepartments();
@@ -59,7 +59,7 @@ const Department = () => {
 
     const handleFinalDelete = async () => {
         try {
-            await axios.delete(`${API_URL}/${deleteId}`);
+            await axios.delete(`${API_URL}/deleteDepartments/${deleteId}`);
             setDeleteId(null);
             fetchDepartments();
         } catch (err) {
