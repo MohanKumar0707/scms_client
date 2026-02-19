@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Search, User, UserCheck, X, Check } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api/complaints';
+const API_URL = 'http://localhost:5000/api/admin/complaints';
 const STAFF_API = 'http://localhost:5000/api/admin/complaints/staff';
 
 const Complaint = () => {
@@ -42,23 +42,24 @@ const Complaint = () => {
 
   const handleAssignStaff = async (staff) => {
     try {
-      // await axios.patch(`${API_URL}/${selectedComplaint._id}`, {
-      //   assignedTo: staff._id,
-      //   status: 'In Progress'
-      // });
+      const res = await axios.patch(
+        `${API_URL}/${selectedComplaint._id}/assign`,
+        {
+          staffId: staff._id
+        }
+      );
 
       setComplaints((prev) =>
         prev.map((c) =>
-          c._id === selectedComplaint._id
-            ? { ...c, assignedTo: staff.name, status: 'In Progress' }
-            : c
+          c._id === selectedComplaint._id ? res.data : c
         )
       );
 
       setIsModalOpen(false);
       setSelectedComplaint(null);
     } catch (err) {
-      alert('Assign panna mudiyala');
+      console.error("Staff assign failed", err);  
+      alert("Staff assign failed");
     }
   };
 
@@ -124,11 +125,10 @@ const Complaint = () => {
                           setSelectedComplaint(item);
                           setIsModalOpen(true);
                         }}
-                        className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all border ${
-                          item.assignedTo
+                        className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all border ${item.assignedTo
                             ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
                             : 'bg-indigo-50 text-indigo-600 border-indigo-100 hover:bg-indigo-600 hover:text-white'
-                        }`}
+                          }`}
                       >
                         <UserCheck size={14} />
                         {item.assignedTo || 'Assign Staff'}

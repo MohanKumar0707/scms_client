@@ -9,6 +9,7 @@ import Category from './pages/admin/Category';
 import Complaint from './pages/admin/Complaint';
 import RaiseComplaint from './pages/student/RaiseComplaint';
 import MyComplaints from './pages/student/MyComplaints';
+import AssignedComplaints from './pages/staff/AssignedComplaint';
 
 function App() {
 
@@ -29,6 +30,9 @@ function App() {
 					{/* Student Routes */}
 					<Route path='raise-complaint' element={<RaiseComplaint />} />
 					<Route path='my-complaints' element={<MyComplaints />} />
+
+					{/* Staff Routes */}
+					<Route path='assigned' element={<AssignedComplaints />} />
 				</Route>
 			</Routes>
 		</Router>
