@@ -74,7 +74,7 @@ function RaiseComplaint() {
 				return;
 			}
 
-			await axios.post(`${API_URL}/raisecomplaints`, {
+			await axios.post(`${API_URL}/complaints/raisecomplaints`, {
 				studentId,
 				...formData,
 				category: formData.category || undefined,

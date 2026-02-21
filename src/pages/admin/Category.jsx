@@ -6,6 +6,7 @@ const API_URL = 'http://localhost:5000/api/categories';
 const DEPT_API_URL = 'http://localhost:5000/api/categories';
 
 const Category = () => {
+    
     const [categories, setCategories] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);

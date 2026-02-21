@@ -58,8 +58,8 @@ function Layout() {
                     { name: 'User Directory', path: '/layout/userManagement', icon: <UserCircle size={20} /> },
                     { name: 'Academic Units', path: '/layout/departments', icon: <Building2 size={20} /> },
                     { name: 'Issue Categories', path: '/layout/categories', icon: <Tags size={20} /> },
-                    { name: 'Grievance Inbox', path: '/layout/complaints', icon: <ClipboardList size={20} /> },
-                    { name: 'Assign Tasks', path: '/layout/assign-complaints', icon: <UserPlus size={20} /> },
+                    { name: 'Grievance Inbox', path: '/layout/grievance-inbox', icon: <ClipboardList size={20} /> },
+                    { name: 'Assign Complaints', path: '/layout/assign-complaints', icon: <UserPlus size={20} /> },
                     { name: 'Analytics', path: '/layout/reports', icon: <BarChart3 size={20} /> },
                     { name: 'System Logs', path: '/layout/audit-logs', icon: <ShieldCheck size={20} /> },
                 ]

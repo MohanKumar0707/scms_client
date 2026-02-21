@@ -144,7 +144,7 @@ function AuthPortal() {
                                 <div className="space-y-8">
                                     <div className="group">
                                         <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4 block ml-1">Register Number</label>
-                                        <input type="text" name="registerNo" required placeholder="24MCA69" className="w-full px-5 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl transition-all outline-none text-sm font-semibold" />
+                                        <input type="text" name="registerNo" required placeholder="24MCA069" className="w-full px-5 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl transition-all outline-none text-sm font-semibold" />
                                     </div>
 
                                     <div className="group">
