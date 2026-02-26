@@ -1,151 +1,202 @@
-import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Briefcase, 
-  MapPin, 
-  User, 
-  Calendar, 
-  ChevronRight, 
-  MoreVertical,
-  CheckCircle2,
-  AlertCircle
-} from "lucide-react";
+    AlertCircle, Calendar, Building2, Tag, ChevronRight, 
+    User, CheckCircle2, Clock, Briefcase 
+} from 'lucide-react';
 
-const AssignedComplaint = () => {
-  const [complaints, setComplaints] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const registerNo = sessionStorage.getItem("registerNo");
-
-  useEffect(() => {
-    // Mocking the fetch for design purposes
-    if (!registerNo) return;
-    const fetchAssignedComplaints = async () => {
-      try {
-        const res = await fetch(`http://localhost:5000/api/staff/assigned/${registerNo}`);
-        const data = await res.json();
-        setComplaints(data);
-      } catch (err) { console.error(err); } finally { setLoading(false); }
-    };
-    fetchAssignedComplaints();
-  }, [registerNo]);
-
-  return (
-    <div className="min-h-screen bg-[#fcfcfd] text-slate-900 font-sans p-4 md:p-12">
-      <div className="max-w-5xl mx-auto">
-        
-        {/* --- Top Navigation / Header --- */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }} 
-            animate={{ opacity: 1, x: 0 }}
-          >
-            <h1 className="text-sm font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2">
-              Staff Portal
-            </h1>
-            <h2 className="text-4xl font-semibold tracking-tight">
-              Assigned <span className="text-slate-400">Tasks</span>
-            </h2>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }} 
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-100"
-          >
-            <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold">
-              {registerNo?.charAt(0) || "S"}
-            </div>
-            <div className="pr-4">
-              <p className="text-xs text-slate-400 font-medium leading-none">Logged in as</p>
-              <p className="text-sm font-bold text-slate-700">{registerNo}</p>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* --- Content Area --- */}
-        {loading ? (
-          <div className="space-y-4">
-            {[1, 2].map(i => <div key={i} className="h-40 w-full bg-slate-100 animate-pulse rounded-3xl" />)}
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            <AnimatePresence mode='popLayout'>
-              {complaints.map((c, index) => (
-                <motion.div
-                  layout
-                  key={c._id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="group bg-white border border-slate-200/60 rounded-[2rem] p-2 pr-6 hover:border-indigo-200 hover:shadow-2xl hover:shadow-indigo-500/5 transition-all duration-500"
-                >
-                  <div className="flex flex-col md:flex-row gap-6 items-center">
-                    
-                    {/* Status Circle Column */}
-                    <div className="hidden md:flex flex-col items-center justify-center w-24 h-24 rounded-[1.7rem] bg-slate-50 group-hover:bg-indigo-50 transition-colors duration-500">
-                      <div className="relative">
-                         <CheckCircle2 className={`w-8 h-8 ${c.priority === 'High' ? 'text-rose-500' : 'text-indigo-500'}`} />
-                         <motion.div 
-                            animate={{ scale: [1, 1.2, 1] }} 
-                            transition={{ repeat: Infinity, duration: 2 }}
-                            className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 border-2 border-white rounded-full" 
-                         />
-                      </div>
-                      <span className="text-[10px] font-bold uppercase mt-2 text-slate-400 group-hover:text-indigo-600">
-                        {c.status}
-                      </span>
-                    </div>
-
-                    {/* Main Info */}
-                    <div className="flex-1 py-4 px-2 md:px-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="flex items-center gap-1 text-[11px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md">
-                           <MapPin size={10} /> {c.department?.name || "General"}
-                        </span>
-                        <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">
-                           {c.priority} Priority
-                        </span>
-                      </div>
-
-                      <h3 className="text-xl font-bold text-slate-800 mb-1 group-hover:text-indigo-600 transition-colors">
-                        {c.title}
-                      </h3>
-                      <p className="text-slate-500 text-sm line-clamp-1 group-hover:line-clamp-none transition-all duration-300">
-                        {c.description}
-                      </p>
-
-                      <div className="flex flex-wrap gap-4 mt-4">
-                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                          <User size={14} className="text-slate-300" />
-                          {c.student?.name} <span className="text-slate-300 font-normal">#{c.student?.registerNo}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                          <Calendar size={14} className="text-slate-300" />
-                          Last Update: {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Action */}
-                    <div className="flex items-center gap-2">
-                      <button className="h-12 px-6 rounded-2xl bg-slate-900 text-white text-sm font-bold hover:bg-indigo-600 hover:-translate-y-1 transition-all duration-300 active:scale-95 shadow-lg shadow-slate-200">
-                        Resolve Task
-                      </button>
-                      <button className="p-3 rounded-2xl text-slate-400 hover:bg-slate-100 transition-colors">
-                        <MoreVertical size={20} />
-                      </button>
-                    </div>
-
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+// Animation Variants
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: { 
+            staggerChildren: 0.1,
+            delayChildren: 0.2 
+        }
+    }
 };
+
+const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+        y: 0,
+        opacity: 1,
+        transition: { type: 'spring', stiffness: 260, damping: 20 }
+    },
+    exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } }
+};
+
+function AssignedComplaint() {
+    const [complaints, setComplaints] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const registerNo = sessionStorage.getItem("registerNo");
+
+    useEffect(() => {
+        const fetchAssignedComplaints = async () => {
+            try {
+                const res = await fetch(`http://localhost:5000/api/staff/assigned/${registerNo}`);
+                const data = await res.json();
+                if (res.ok) setComplaints(data);
+            } catch (err) { 
+                console.error(err); 
+            } finally { 
+                setLoading(false); 
+            }
+        };
+        if (registerNo) fetchAssignedComplaints();
+    }, [registerNo]);
+
+    if (loading) return <LoadingSkeleton />;
+
+    return (
+        <div className="min-h-screen bg-[#F9FAFB] text-slate-900 font-sans antialiased selection:bg-indigo-100">
+            <div className="max-w-7xl mx-auto px-6 py-12">
+                
+                {/* Header Section - MyComplaints Style */}
+                <header className="mb-12">
+                    <motion.div 
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                    >
+                        <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: '2.5rem' }}
+                            transition={{ delay: 0.4, duration: 0.8 }}
+                            className="h-1 bg-indigo-600 mb-4 rounded-full"
+                        />
+                        <h1 className="text-4xl font-black tracking-tight text-slate-900">Assigned Tasks</h1>
+                        <p className="text-slate-500 mt-2 font-medium">Manage and resolve service requests assigned to you</p>
+                    </motion.div>
+                </header>
+
+                {/* Main Grid Area */}
+                <AnimatePresence mode="wait">
+                    {complaints.length === 0 ? (
+                        <EmptyState key="empty" />
+                    ) : (
+                        <motion.div 
+                            key="grid"
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="visible"
+                            exit="hidden"
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                        >
+                            {complaints.map((item) => (
+                                <motion.div 
+                                    key={item._id}
+                                    layout
+                                    variants={itemVariants}
+                                    whileHover={{ 
+                                        y: -8, 
+                                        shadow: "0 20px 25px -5px rgb(0 0 0 / 0.1)" 
+                                    }}
+                                    className="group relative flex flex-col bg-white border border-slate-200 rounded-2xl p-6 hover:border-indigo-300 transition-all duration-300 shadow-sm"
+                                >
+                                    {/* Status Indicator */}
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest border border-current flex items-center gap-1.5 ${getStatusColor(item.status)}`}>
+                                            <motion.span 
+                                                animate={{ opacity: [0.4, 1, 0.4] }}
+                                                transition={{ repeat: Infinity, duration: 2 }}
+                                                className="h-1.5 w-1.5 rounded-full bg-current" 
+                                            />
+                                            {item.status}
+                                        </div>
+                                        <span className="text-[11px] font-bold text-slate-300">#{item._id.slice(-6)}</span>
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="flex-1 mb-6">
+                                        <h3 className="text-lg font-bold text-slate-900 mb-2 leading-tight group-hover:text-indigo-600 transition-colors">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-500 text-[13px] leading-relaxed line-clamp-3">
+                                            {item.description}
+                                        </p>
+                                    </div>
+
+                                    {/* Student Info & Meta - Staff Specific */}
+                                    <div className="space-y-3 mb-6">
+                                        <div className="flex items-center gap-2 text-[12px] font-semibold text-slate-700">
+                                            <div className="h-6 w-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] text-indigo-600">
+                                                {item.student?.name?.charAt(0) || 'S'}
+                                            </div>
+                                            {item.student?.name} <span className="text-slate-400 font-normal">({item.student?.registerNo})</span>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            <TagBadge icon={<Building2 className="w-3 h-3" />} label={item.department?.name || 'General'} />
+                                            <TagBadge icon={<Tag className="w-3 h-3" />} label={item.priority || 'Medium'} />
+                                        </div>
+                                    </div>
+
+                                    {/* Bottom Row */}
+                                    <div className="flex items-center justify-between pt-4 border-t border-slate-50">
+                                        <div className="flex items-center gap-2 text-slate-400 font-semibold text-[11px]">
+                                            <Calendar className="w-3.5 h-3.5" />
+                                            {new Date(item.createdAt).toLocaleDateString()}
+                                        </div>
+                                        <motion.button 
+                                            whileHover={{ x: 3 }}
+                                            className="text-indigo-600 hover:text-indigo-700 font-bold text-xs flex items-center gap-0.5"
+                                        >
+                                            Take Action 
+                                            <ChevronRight className="w-4 h-4" />
+                                        </motion.button>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+        </div>
+    );
+}
+
+/* --- Helpers --- */
+
+const TagBadge = ({ icon, label }) => (
+    <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-50 rounded-lg text-[10px] font-bold text-slate-500 border border-slate-100">
+        {icon}
+        {label}
+    </div>
+);
+
+const getStatusColor = (status) => {
+    switch (status) {
+        case 'Resolved': return 'text-emerald-600 bg-emerald-50/50 border-emerald-100';
+        case 'Pending': return 'text-amber-600 bg-amber-50/50 border-amber-100';
+        case 'In Progress': return 'text-indigo-600 bg-indigo-50/50 border-indigo-100';
+        default: return 'text-slate-500 bg-slate-50 border-slate-200';
+    }
+};
+
+const LoadingSkeleton = () => (
+    <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="h-10 w-48 bg-slate-200 rounded-lg animate-pulse mb-12" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => (
+                <div key={i} className="h-72 bg-white border border-slate-100 rounded-2xl animate-pulse" />
+            ))}
+        </div>
+    </div>
+);
+
+const EmptyState = () => (
+    <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col items-center justify-center py-20 bg-white border-2 border-dashed border-slate-200 rounded-[2.5rem]"
+    >
+        <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-4 text-slate-300">
+            <CheckCircle2 size={32} />
+        </div>
+        <h2 className="text-xl font-bold text-slate-900">All caught up!</h2>
+        <p className="text-slate-400 text-sm mt-1">No new tasks have been assigned to you yet.</p>
+    </motion.div>
+);
 
 export default AssignedComplaint;
