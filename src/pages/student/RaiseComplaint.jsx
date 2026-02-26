@@ -9,6 +9,7 @@ import {
 const API_URL = "http://localhost:5000/api";
 
 function RaiseComplaint() {
+	const [file, setFile] = useState(null);
 
 	const [formData, setFormData] = useState({
 		title: '',
@@ -58,34 +59,32 @@ function RaiseComplaint() {
 	};
 
 	const handleSubmit = async (e) => {
-		
 		e.preventDefault();
-		if (!formData.title.trim() || !formData.description.trim()) {
-			setMessage({ text: 'Please complete all required fields.', type: 'error' });
-			return;
-		}
-
 		setLoading(true);
+
 		try {
 			const studentId = sessionStorage.getItem('registerNo');
-			if (!studentId) {
-				setMessage({ text: 'Session expired. Please login again.', type: 'error' });
-				setLoading(false);
-				return;
+
+			// Use FormData instead of a JSON object
+			const data = new FormData();
+			data.append('studentId', studentId);
+			data.append('title', formData.title);
+			data.append('description', formData.description);
+			data.append('category', formData.category);
+			data.append('department', formData.department);
+			data.append('priority', formData.priority);
+			if (file) {
+				data.append('image', file); // 'image' matches upload.single('image') in backend
 			}
 
-			await axios.post(`${API_URL}/complaints/raisecomplaints`, {
-				studentId,
-				...formData,
-				category: formData.category || undefined,
-				department: formData.department || undefined,
+			await axios.post(`${API_URL}/complaints/raisecomplaints`, data, {
+				headers: { 'Content-Type': 'multipart/form-data' }
 			});
 
-			setMessage({ text: 'Ticket submitted successfully. We are on it!', type: 'success' });
-			setFormData({ title: '', description: '', category: '', department: '', priority: 'Medium' });
-			setTimeout(() => setMessage({ text: '', type: '' }), 5000);
+			setMessage({ text: 'Ticket submitted with image!', type: 'success' });
+			setFile(null); // Clear file
 		} catch (err) {
-			setMessage({ text: err.response?.data?.message || 'Server error. Try again later.', type: 'error' });
+			setMessage({ text: 'Error uploading complaint', type: 'error' });
 		} finally {
 			setLoading(false);
 		}
@@ -201,14 +200,33 @@ function RaiseComplaint() {
 												type="button"
 												onClick={() => setFormData(p => ({ ...p, priority: level }))}
 												className={`flex items-center justify-center gap-2 py-3 px-2 rounded-xl text-xs font-bold transition-all border-2 ${formData.priority === level
-														? `bg-${config.color}-600 border-${config.color}-600 text-white shadow-lg shadow-${config.color}-200 scale-[1.02]`
-														: `bg-white border-slate-100 text-slate-500 hover:border-slate-300`
+													? `bg-${config.color}-600 border-${config.color}-600 text-white shadow-lg shadow-${config.color}-200 scale-[1.02]`
+													: `bg-white border-slate-100 text-slate-500 hover:border-slate-300`
 													}`}
 											>
 												{config.icon}
 												{level}
 											</button>
 										))}
+									</div>
+								</div>
+								<div className="space-y-2">
+									<label className="block text-sm font-semibold text-slate-700">Attach Image (Optional)</label>
+									<div className="flex items-center justify-center w-full">
+										<label className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-200 border-dashed rounded-2xl cursor-pointer bg-slate-50/50 hover:bg-slate-100 transition-colors">
+											<div className="flex flex-col items-center justify-center pt-5 pb-6">
+												<Sparkles className="w-8 h-8 text-slate-400 mb-2" />
+												<p className="text-sm text-slate-500">
+													{file ? <span className="text-blue-600 font-medium">{file.name}</span> : "Click to upload image"}
+												</p>
+											</div>
+											<input
+												type="file"
+												className="hidden"
+												accept="image/*"
+												onChange={(e) => setFile(e.target.files[0])}
+											/>
+										</label>
 									</div>
 								</div>
 
