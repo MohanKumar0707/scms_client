@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
-    LayoutDashboard, FilePlus, Search, LogOut,Tags, UserPlus,
-    UserCircle, GraduationCap, ChevronRight, Menu, Bell,
+    LayoutDashboard, FilePlus, Search, LogOut, Tags, UserPlus,
+    UserCircle, GraduationCap, ChevronRight, Menu, Bell, Clock,
     Settings, Sparkles, MessageSquare, ClipboardList,
     CheckCircle2, Building2, ShieldCheck, BarChart3, ListChecks
 } from 'lucide-react';
@@ -33,7 +33,8 @@ function Layout() {
                 items: [
                     { name: 'Dashboard', path: '/layout/dashboard', icon: <LayoutDashboard size={20} /> },
                     { name: 'Raise Complaint', path: '/layout/raise-complaint', icon: <FilePlus size={20} /> },
-                    { name: 'My Complaints', path: '/layout/my-complaints', icon: <ListChecks size={20} /> },
+                    { name: 'Pending Complaints', path: '/layout/my-complaints/pending', icon: <Clock size={20} /> },
+                    { name: 'All Complaints', path: '/layout/my-complaints/all', icon: <ListChecks size={20} /> },
                     { name: 'Notifications', path: '/layout/notifications', icon: <Bell size={20} /> },
                     { name: 'Feedback', path: '/layout/feedback', icon: <MessageSquare size={20} /> },
                 ]

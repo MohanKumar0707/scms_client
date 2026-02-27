@@ -19,7 +19,7 @@ function MyComplaints() {
 
     const [complaints, setComplaints] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState('all');
+    const [filter, setFilter] = useState('pending');
     const registerNo = sessionStorage.getItem("registerNo");
 
     useEffect(() => {
@@ -49,55 +49,13 @@ function MyComplaints() {
             <div className="bg-white border-b border-slate-200 sticky top-0 z-20">
                 <div className="mx-auto px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-xl font-bold tracking-tight text-slate-900">Support Center</h1>
+                        <h1 className="text-xl font-bold tracking-tight text-slate-900">Pending Complaints</h1>
                         <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-0.5">Manage Service Requests</p>
-                    </div>
-
-                    {/* Minimalist Filter Bar */}
-                    <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
-                        {['all', 'pending', 'in progress', 'resolved'].map((f) => (
-                            <button
-                                key={f}
-                                onClick={() => setFilter(f)}
-                                className={`px-4 py-1.5 text-xs font-bold rounded-lg capitalize transition-all duration-200 ${filter === f
-                                    ? 'bg-white text-blue-600 shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-800'
-                                    }`}
-                            >
-                                {f}
-                            </button>
-                        ))}
                     </div>
                 </div>
             </div>
 
             <div className="mx-auto px-6 py-6">
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <SummaryCard
-                        label="Active Tickets"
-                        count={complaints.filter(c => c.status !== 'Resolved').length}
-                        sub="Awaiting action"
-                        icon={Clock}
-                        accent="blue"
-                    />
-                    <SummaryCard
-                        label="Success Rate"
-                        count={`${Math.round((complaints.filter(c => c.status === 'Resolved').length / complaints.length || 0) * 100)}%`}
-                        sub="Resolved requests"
-                        icon={CheckCircle}
-                        accent="emerald"
-                    />
-                    <SummaryCard
-                        label="Ref. Number"
-                        count={registerNo?.slice(0, 8) || "N/A"}
-                        sub="User identifier"
-                        icon={Tag}
-                        accent="slate"
-                    />
-                </div>
-
-                {/* Complaints Table/List */}
                 <div className="space-y-4">
                     <AnimatePresence mode="popLayout">
                         {filteredComplaints.length === 0 ? (

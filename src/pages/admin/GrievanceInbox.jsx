@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Search, Inbox, Filter, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import { Search, Inbox, Filter, Clock, CheckCircle, AlertCircle, Eye } from "lucide-react";
 
 const GrievanceInbox = () => {
+
     const [grievances, setGrievances] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
@@ -94,6 +95,9 @@ const GrievanceInbox = () => {
                                 <th className="px-6 py-4 text-[11px] font-bold uppercase text-slate-500 tracking-widest text-center">
                                     Status
                                 </th>
+                                <th className="px-6 py-4 text-[11px] font-bold uppercase text-slate-500 tracking-widest text-center">
+                                    Action
+                                </th>
                             </tr>
                         </thead>
 
@@ -142,6 +146,16 @@ const GrievanceInbox = () => {
                                                     {item.status === "Resolved" && <CheckCircle size={10} className="mr-1" />}
                                                     {item.status}
                                                 </span>
+                                            </td>
+
+                                            <td className="px-6 py-5">
+                                                <button
+                                                    onClick={() => console.log("View", item.id)}
+                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-md transition-colors"
+                                                >
+                                                    <Eye size={14} />
+                                                    View
+                                                </button>
                                             </td>
                                         </tr>
                                     ))
