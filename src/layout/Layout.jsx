@@ -34,7 +34,7 @@ function Layout() {
                     { name: 'Dashboard', path: '/layout/dashboard', icon: <LayoutDashboard size={20} /> },
                     { name: 'Raise Complaint', path: '/layout/raise-complaint', icon: <FilePlus size={20} /> },
                     { name: 'Pending Complaints', path: '/layout/my-complaints/pending', icon: <Clock size={20} /> },
-                    { name: 'All Complaints', path: '/layout/my-complaints/all', icon: <ListChecks size={20} /> },
+                    { name: 'My Complaints', path: '/layout/my-complaints/all', icon: <ListChecks size={20} /> },
                     { name: 'Notifications', path: '/layout/notifications', icon: <Bell size={20} /> },
                     { name: 'Feedback', path: '/layout/feedback', icon: <MessageSquare size={20} /> },
                 ]

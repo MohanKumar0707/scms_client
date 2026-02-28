@@ -85,7 +85,7 @@ const AssignComplaints = () => {
                     <table className="w-full text-center border-collapse">
                         <thead>
                             <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase text-slate-500 tracking-wider">
-                                <th className="px-6 py-4">Reference</th>
+                                <th className="px-6 py-4">Complaint Id</th>
                                 <th className="px-6 py-4">Student</th>
                                 <th className="px-6 py-4">Details</th>
                                 <th className="px-6 py-4 text-center">Status</th>
@@ -98,7 +98,7 @@ const AssignComplaints = () => {
                                     .filter((c) => c.student?.name?.toLowerCase().includes(searchTerm.toLowerCase()))
                                     .map((item) => (
                                         <tr key={item._id} className="hover:bg-slate-50/50">
-                                            <td className="px-6 py-4 font-mono text-[10px]">#{item._id.slice(-6).toUpperCase()}</td>
+                                            <td className="px-6 py-4 font-mono">#{item._id.slice(-6).toUpperCase()}</td>
                                             <td className="px-6 py-4 font-bold">{item.student?.name || "Unknown"}</td>
                                             <td className="px-6 py-4 text-slate-500">{item.title}</td>
                                             <td className="px-6 py-4 text-center">
