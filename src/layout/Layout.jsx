@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
-    LayoutDashboard, FilePlus, Search, LogOut, Tags, UserPlus,
-    UserCircle, GraduationCap, ChevronRight, Menu, Bell, Clock,
-    Settings, Sparkles, MessageSquare, ClipboardList,
-    CheckCircle2, Building2, ShieldCheck, BarChart3, ListChecks
-} from 'lucide-react';
+    LayoutDashboard, FilePlus, Search, LogOut, Tags, UserPlus, UserCircle, GraduationCap,
+    Bell, Clock, Settings, Sparkles, MessageSquare, ClipboardList, CheckCircle2, Building2,
+    ShieldCheck, BarChart3, ListChecks
+} from "lucide-react";
+
 
 function Layout() {
 
@@ -29,14 +29,16 @@ function Layout() {
     const roleMenus = {
         student: [
             {
-                group: "Student Services",
+                group: "Student Portal",
                 items: [
-                    { name: 'Dashboard', path: '/layout/dashboard', icon: <LayoutDashboard size={20} /> },
-                    { name: 'Raise Complaint', path: '/layout/raise-complaint', icon: <FilePlus size={20} /> },
-                    { name: 'Pending Complaints', path: '/layout/my-complaints/pending', icon: <Clock size={20} /> },
-                    { name: 'My Complaints', path: '/layout/my-complaints/all', icon: <ListChecks size={20} /> },
-                    { name: 'Notifications', path: '/layout/notifications', icon: <Bell size={20} /> },
-                    { name: 'Feedback', path: '/layout/feedback', icon: <MessageSquare size={20} /> },
+                    { name: "Dashboard", path: "/layout/dashboard", icon: <LayoutDashboard size={20} /> },
+                    { name: "Raise New Complaint", path: "/layout/raise-complaint", icon: <FilePlus size={20} /> },
+                    { name: "My Complaints", path: "/layout/my-complaints", icon: <ListChecks size={20} /> },
+                    { name: "Complaint Status Tracker", path: "/layout/status-tracker", icon: <Search size={20} /> },
+                    { name: "Complaint History", path: "/layout/complaint-history", icon: <ClipboardList size={20} /> },
+                    { name: "Notifications", path: "/layout/notifications", icon: <Bell size={20} /> },
+                    { name: "Submit Feedback", path: "/layout/submit-feedback", icon: <MessageSquare size={20} /> },
+                    { name: "Profile Settings", path: "/layout/profile-settings", icon: <Settings size={20} /> }
                 ]
             }
         ],
@@ -46,8 +48,11 @@ function Layout() {
                 items: [
                     { name: 'Dashboard', path: '/layout/dashboard', icon: <LayoutDashboard size={20} /> },
                     { name: 'Assigned Complaints', path: '/layout/assigned', icon: <UserCircle size={20} /> },
-                    { name: 'Update Status', path: '/layout/update-status', icon: <Settings size={20} /> },
-                    { name: 'Completed Complaints', path: '/layout/completed', icon: <CheckCircle2 size={20} /> },
+                    { name: "Update Complaint Status", path: "/layout/update-status", icon: <Settings size={20} /> },
+                    { name: "Completed Complaints", path: "/layout/completed", icon: <CheckCircle2 size={20} /> },
+                    { name: "Escalated Issues", path: "/layout/escalated", icon: <Clock size={20} /> },
+                    { name: "Notifications", path: "/layout/notifications", icon: <Bell size={20} /> },
+                    { name: "Profile Settings", path: "/layout/profile", icon: <Settings size={20} /> }
                 ]
             }
         ],
@@ -59,10 +64,33 @@ function Layout() {
                     { name: 'User Directory', path: '/layout/userManagement', icon: <UserCircle size={20} /> },
                     { name: 'Academic Units', path: '/layout/departments', icon: <Building2 size={20} /> },
                     { name: 'Issue Categories', path: '/layout/categories', icon: <Tags size={20} /> },
-                    { name: 'Grievance Inbox', path: '/layout/grievance-inbox', icon: <ClipboardList size={20} /> },
-                    { name: 'Assign Complaints', path: '/layout/assign-complaints', icon: <UserPlus size={20} /> },
-                    { name: 'Analytics', path: '/layout/reports', icon: <BarChart3 size={20} /> },
-                    { name: 'System Logs', path: '/layout/audit-logs', icon: <ShieldCheck size={20} /> },
+                ]
+            },
+            {
+                group: "Complaint Management",
+                items: [
+                    { name: "All Complaints", path: "/layout/all-complaints", icon: <ClipboardList size={20} /> },
+                    { name: "Grievance Inbox", path: "/layout/grievance-inbox", icon: <MessageSquare size={20} /> },
+                    { name: "Assign Complaints", path: "/layout/assign-complaints", icon: <UserPlus size={20} /> },
+                    { name: "Escalated Complaints", path: "/layout/escalated", icon: <Clock size={20} /> },
+                    { name: "Resolved Complaints", path: "/layout/resolved", icon: <CheckCircle2 size={20} /> }
+                ]
+            },
+            {
+                group: "Reports & Monitoring",
+                items: [
+                    { name: "Analytics Dashboard", path: "/layout/reports", icon: <BarChart3 size={20} /> },
+                    { name: "Department Performance", path: "/layout/department-performance", icon: <Building2 size={20} /> },
+                    { name: "Staff Performance", path: "/layout/staff-performance", icon: <UserCircle size={20} /> },
+                    { name: "Export Reports", path: "/layout/export", icon: <Sparkles size={20} /> }
+                ]
+            },
+            {
+                group: "System Control",
+                items: [
+                    { name: "Audit Logs", path: "/layout/audit-logs", icon: <ShieldCheck size={20} /> },
+                    { name: "Notification Center", path: "/layout/notifications", icon: <Bell size={20} /> },
+                    { name: "System Settings", path: "/layout/settings", icon: <Settings size={20} /> }
                 ]
             }
         ]
