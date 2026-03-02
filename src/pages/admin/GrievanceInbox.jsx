@@ -416,7 +416,7 @@ const GrievanceInbox = () => {
                                                     <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded">
                                                         {item.id.slice(-8)}
                                                     </span>
-                                                    <span className="flex items-center gap-1 text-slate-500 min-w-0">
+                                                    <span className="flex items-center justify-center gap-1 text-slate-500 min-w-0">
                                                         <UserCircle size={12} className="flex-shrink-0" />
                                                         <span className="truncate max-w-[120px]">{item.studentName}</span>
                                                     </span>

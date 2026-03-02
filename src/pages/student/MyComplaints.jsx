@@ -573,7 +573,6 @@ const MyComplaints = () => {
                                         const loadingDetail = loadingDetails[item.id];
                                         const priorityConfig = getPriorityConfig(item.priority);
                                         const statusConfig = getStatusConfig(item.status);
-
                                         return (
                                             <React.Fragment key={item.id}>
                                                 {/* Main Complaint Row */}
@@ -582,7 +581,7 @@ const MyComplaints = () => {
                                                     onClick={() => toggleExpand(item.id)}
                                                 >
                                                     {/* Complaint Details Column */}
-                                                    <td className="px-10 py-4">
+                                                    <td className="px-16 py-4">
                                                         <div className="flex gap-3">
                                                             <div className={`w-2 h-2 rounded-full my-auto ${priorityConfig.dot} flex-shrink-0`}></div>
                                                             <div className="min-w-0 flex-1">

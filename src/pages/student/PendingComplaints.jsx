@@ -504,7 +504,7 @@ function PendingComplaints() {
                             <table className="w-full">
                                 <thead className="bg-slate-50 border-b border-slate-200">
                                     <tr>
-                                        <th className="px-6 py-3 text-left">
+                                        <th className="px-6 py-3 text-center">
                                             <span className="text-xs font-medium tracking-wider text-slate-500">Complaint Details</span>
                                         </th>
                                         <th className="px-6 py-3 text-center">
@@ -531,14 +531,13 @@ function PendingComplaints() {
                                         const loadingDetail = loadingDetails[item.id];
                                         const priorityConfig = getPriorityConfig(item.priority);
                                         const statusConfig = getStatusConfig(item.status);
-
                                         return (
                                             <React.Fragment key={item.id}>
                                                 <tr
                                                     className={`hover:bg-slate-50/80 transition-all cursor-pointer group ${isExpanded ? 'bg-indigo-50/30' : ''}`}
                                                     onClick={() => toggleExpand(item.id)}
                                                 >
-                                                    <td className="px-6 py-4">
+                                                    <td className="px-16 py-4">
                                                         <div className="flex gap-3">
                                                             <div className={`w-2 h-2 rounded-full my-auto ${priorityConfig.dot} flex-shrink-0`}></div>
                                                             <div className="min-w-0 flex-1">
