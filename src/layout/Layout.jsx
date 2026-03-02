@@ -52,7 +52,7 @@ function Layout() {
                     { name: "Completed Complaints", path: "/layout/completed", icon: <CheckCircle2 size={20} /> },
                     { name: "Escalated Issues", path: "/layout/escalated", icon: <Clock size={20} /> },
                     { name: "Notifications", path: "/layout/notifications", icon: <Bell size={20} /> },
-                    { name: "Profile Settings", path: "/layout/profile", icon: <Settings size={20} /> }
+                    { name: "Profile Settings", path: "/layout/profile-settings", icon: <Settings size={20} /> }
                 ]
             }
         ],

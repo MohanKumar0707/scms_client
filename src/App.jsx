@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./layout/Layout";
 import Login from "./pages/common/Login";
 import Dashboard from "./pages/common/Dashboard";
+import Profile from "./pages/common/Profile";
 
 // Admin Routes
 import UserManage from "./pages/admin/UserManage";
@@ -19,6 +20,7 @@ import MyComplaints from "./pages/student/MyComplaints";
 
 // Staff Routes
 import AssignedComplaints from "./pages/staff/AssignedComplaint";
+import UpdateComplaints from "./pages/staff/UpdateComplaints";
 
 function App() {
 
@@ -29,7 +31,8 @@ function App() {
                 {/* Common Routes */}
                 <Route path="/" element={<Login />} />
                 <Route path="/layout/*" element={<Layout />}>
-                    <Route path="dashboard" element={<Dashboard />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="profile-settings" element={<Profile />} />
 
                     {/* Admin Routes */}
                     <Route path="userManagement" element={<UserManage />} />
@@ -41,9 +44,11 @@ function App() {
                     {/* Student Routes */}
                     <Route path="raise-complaint" element={<RaiseComplaint />} />
                     <Route path="my-complaints" element={<MyComplaints />} />
+                    
 
                     {/* Staff Routes */}
                     <Route path="assigned" element={<AssignedComplaints />} />
+                    <Route path="update-status" element={<UpdateComplaints />} />
                 </Route>
             </Routes>
         </Router>
