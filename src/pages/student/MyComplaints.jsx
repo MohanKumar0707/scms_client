@@ -46,7 +46,7 @@ const MyComplaints = () => {
 
                 if (res.ok) {
                     const formattedComplaints = data.map(item => ({
-                        id: item._id,
+                        id: item.complaintId,
                         title: item.title,
                         category: item.category?.name || "General",
                         status: item.status,
