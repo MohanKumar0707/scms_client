@@ -36,7 +36,7 @@ function Layout() {
                     { name: "My Complaints", path: "/layout/my-complaints", icon: <ListChecks size={20} /> },
                     { name: "Complaint Status Tracker", path: "/layout/status-tracker", icon: <Search size={20} /> },
                     { name: "Complaint History", path: "/layout/complaint-history", icon: <ClipboardList size={20} /> },
-                    { name: "Submit Feedback", path: "/layout/submit-feedback", icon: <MessageSquare size={20} /> },
+                    // { name: "Submit Feedback", path: "/layout/submit-feedback", icon: <MessageSquare size={20} /> },
                     { name: "Profile Settings", path: "/layout/profile-settings", icon: <Settings size={20} /> }
                 ]
             }
