@@ -36,7 +36,6 @@ function Layout() {
                     { name: "My Complaints", path: "/layout/my-complaints", icon: <ListChecks size={20} /> },
                     { name: "Complaint Status Tracker", path: "/layout/status-tracker", icon: <Search size={20} /> },
                     { name: "Complaint History", path: "/layout/complaint-history", icon: <ClipboardList size={20} /> },
-                    { name: "Notifications", path: "/layout/notifications", icon: <Bell size={20} /> },
                     { name: "Submit Feedback", path: "/layout/submit-feedback", icon: <MessageSquare size={20} /> },
                     { name: "Profile Settings", path: "/layout/profile-settings", icon: <Settings size={20} /> }
                 ]
@@ -50,8 +49,6 @@ function Layout() {
                     { name: 'Assigned Complaints', path: '/layout/assigned', icon: <UserCircle size={20} /> },
                     { name: "Update Complaint Status", path: "/layout/update-status", icon: <Settings size={20} /> },
                     { name: "Completed Complaints", path: "/layout/completed", icon: <CheckCircle2 size={20} /> },
-                    { name: "Escalated Issues", path: "/layout/escalated", icon: <Clock size={20} /> },
-                    { name: "Notifications", path: "/layout/notifications", icon: <Bell size={20} /> },
                     { name: "Profile Settings", path: "/layout/profile-settings", icon: <Settings size={20} /> }
                 ]
             }
@@ -69,28 +66,9 @@ function Layout() {
             {
                 group: "Complaint Management",
                 items: [
-                    { name: "All Complaints", path: "/layout/all-complaints", icon: <ClipboardList size={20} /> },
                     { name: "Grievance Inbox", path: "/layout/grievance-inbox", icon: <MessageSquare size={20} /> },
                     { name: "Assign Complaints", path: "/layout/assign-complaints", icon: <UserPlus size={20} /> },
-                    { name: "Escalated Complaints", path: "/layout/escalated", icon: <Clock size={20} /> },
                     { name: "Resolved Complaints", path: "/layout/resolved", icon: <CheckCircle2 size={20} /> }
-                ]
-            },
-            {
-                group: "Reports & Monitoring",
-                items: [
-                    { name: "Analytics Dashboard", path: "/layout/reports", icon: <BarChart3 size={20} /> },
-                    { name: "Department Performance", path: "/layout/department-performance", icon: <Building2 size={20} /> },
-                    { name: "Staff Performance", path: "/layout/staff-performance", icon: <UserCircle size={20} /> },
-                    { name: "Export Reports", path: "/layout/export", icon: <Sparkles size={20} /> }
-                ]
-            },
-            {
-                group: "System Control",
-                items: [
-                    { name: "Audit Logs", path: "/layout/audit-logs", icon: <ShieldCheck size={20} /> },
-                    { name: "Notification Center", path: "/layout/notifications", icon: <Bell size={20} /> },
-                    { name: "System Settings", path: "/layout/settings", icon: <Settings size={20} /> }
                 ]
             }
         ]

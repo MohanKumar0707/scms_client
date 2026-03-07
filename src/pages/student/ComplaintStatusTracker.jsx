@@ -141,9 +141,11 @@ const StatusBadge = ({ status }) => {
 };
 
 /**
- * History timeline item component
+ * History timeline item component with image display
  */
 const HistoryItem = ({ entry, isLast }) => {
+    const [selectedImage, setSelectedImage] = useState(null);
+    
     const getStatusIcon = (status) => {
         switch(status) {
             case 'Pending': return <Clock size={16} />;
@@ -160,237 +162,358 @@ const HistoryItem = ({ entry, isLast }) => {
         return STATUS_STYLES[status]?.split(' ')[1] || 'text-slate-500';
     };
 
+    // Function to get full image URL
+    const getImageUrl = (photoPath) => {
+        // If it's already a full URL, return as is
+        if (photoPath.startsWith('http')) return photoPath;
+        
+        // Construct the full URL to your server
+        // Remove /api from the end if present
+        const baseUrl = API_BASE_URL.replace('/api', '');
+        return `${baseUrl}/uploads/${photoPath}`;
+    };
+
     return (
-        <div className="relative flex gap-4 group">
-            {!isLast && (
-                <div 
-                    className="absolute left-4 top-10 w-0.5 h-16 bg-gradient-to-b from-indigo-200 to-slate-100" 
-                    aria-hidden="true"
-                />
-            )}
-            
-            {/* Timeline dot with icon */}
-            <div className={`relative z-10 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 
-                ${entry.status ? getStatusColor(entry.status).replace('text-', 'bg-').replace('600', '100') : 'bg-slate-100'}
-                border-2 border-white shadow-md`}
-            >
-                <div className={entry.status ? getStatusColor(entry.status) : 'text-slate-400'}>
-                    {getStatusIcon(entry.status)}
-                </div>
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 pb-6">
-                <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm hover:shadow-md transition-all">
-                    <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
-                        <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                                {new Date(entry.createdAt).toLocaleString(undefined, {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                })}
-                            </span>
-                            {entry.status && (
-                                <StatusBadge status={entry.status} />
-                            )}
-                        </div>
-                        <div className="flex items-center gap-2 text-xs text-slate-500">
-                            <User size={12} />
-                            <span className="font-medium">{entry.updatedBy?.name || 'System'}</span>
-                            <span className="text-slate-300">•</span>
-                            <span className="text-slate-400">{entry.updatedBy?.role || 'Update'}</span>
-                        </div>
+        <>
+            <div className="relative flex gap-4 group">
+                {!isLast && (
+                    <div 
+                        className="absolute left-4 top-10 w-0.5 h-16 bg-gradient-to-b from-indigo-200 to-slate-100" 
+                        aria-hidden="true"
+                    />
+                )}
+                
+                {/* Timeline dot with icon */}
+                <div className={`relative z-10 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 
+                    ${entry.status ? getStatusColor(entry.status).replace('text-', 'bg-').replace('600', '100') : 'bg-slate-100'}
+                    border-2 border-white shadow-md`}
+                >
+                    <div className={entry.status ? getStatusColor(entry.status) : 'text-slate-400'}>
+                        {getStatusIcon(entry.status)}
                     </div>
+                </div>
 
-                    {/* Title if changed */}
-                    {entry.title && (
-                        <div className="mb-2 flex items-start gap-2">
-                            <FileText size={14} className="text-slate-400 mt-0.5 flex-shrink-0" />
-                            <p className="text-sm font-bold text-slate-700">{entry.title}</p>
-                        </div>
-                    )}
-
-                    {/* Description if present */}
-                    {entry.description && (
-                        <div className="mb-2 flex items-start gap-2">
-                            <MessageSquare size={14} className="text-slate-400 mt-0.5 flex-shrink-0" />
-                            <p className="text-sm text-slate-600">{entry.description}</p>
-                        </div>
-                    )}
-
-                    {/* Charges if present */}
-                    {entry.charges && (
-                        <div className="mb-2 flex items-start gap-2">
-                            <DollarSign size={14} className="text-slate-400 mt-0.5 flex-shrink-0" />
-                            <p className="text-sm font-medium text-slate-700">Charges: ₹{entry.charges}</p>
-                        </div>
-                    )}
-
-                    {/* Photos if present */}
-                    {entry.photos && entry.photos.length > 0 && (
-                        <div className="flex items-start gap-2">
-                            <Image size={14} className="text-slate-400 mt-0.5 flex-shrink-0" />
-                            <div className="flex gap-2 flex-wrap">
-                                {entry.photos.map((photo, index) => (
-                                    <span key={index} className="text-xs text-indigo-600 underline cursor-pointer">
-                                        Attachment {index + 1}
-                                    </span>
-                                ))}
+                {/* Content */}
+                <div className="flex-1 pb-6">
+                    <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm hover:shadow-md transition-all">
+                        <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                    {new Date(entry.createdAt).toLocaleString(undefined, {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}
+                                </span>
+                                {entry.status && (
+                                    <StatusBadge status={entry.status} />
+                                )}
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-slate-500">
+                                <User size={12} />
+                                <span className="font-medium">{entry.updatedBy?.name || 'System'}</span>
+                                <span className="text-slate-300">•</span>
+                                <span className="text-slate-400">{entry.updatedBy?.role || 'Update'}</span>
                             </div>
                         </div>
-                    )}
+
+                        {/* Title if changed */}
+                        {entry.title && (
+                            <div className="mb-2 flex items-start gap-2">
+                                <FileText size={14} className="text-slate-400 mt-0.5 flex-shrink-0" />
+                                <p className="text-sm font-bold text-slate-700">{entry.title}</p>
+                            </div>
+                        )}
+
+                        {/* Description if present */}
+                        {entry.description && (
+                            <div className="mb-2 flex items-start gap-2">
+                                <MessageSquare size={14} className="text-slate-400 mt-0.5 flex-shrink-0" />
+                                <p className="text-sm text-slate-600">{entry.description}</p>
+                            </div>
+                        )}
+
+                        {/* Charges if present */}
+                        {entry.charges && (
+                            <div className="mb-2 flex items-start gap-2">
+                                <DollarSign size={14} className="text-slate-400 mt-0.5 flex-shrink-0" />
+                                <p className="text-sm font-medium text-slate-700">Charges: ₹{entry.charges}</p>
+                            </div>
+                        )}
+
+                        {/* Photos if present - Image Gallery */}
+                        {entry.photos && entry.photos.length > 0 && (
+                            <div className="mt-3">
+                                <div className="flex items-start gap-2 mb-2">
+                                    <Image size={14} className="text-slate-400 mt-0.5 flex-shrink-0" />
+                                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        Attachments ({entry.photos.length})
+                                    </span>
+                                </div>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                                    {entry.photos.map((photo, index) => (
+                                        <div 
+                                            key={index}
+                                            className="relative group/image cursor-pointer rounded-lg overflow-hidden border border-slate-200 hover:border-indigo-300 transition-all"
+                                            onClick={() => setSelectedImage(getImageUrl(photo))}
+                                        >
+                                            <img 
+                                                src={getImageUrl(photo)} 
+                                                alt={`Attachment ${index + 1}`}
+                                                className="w-full h-24 object-cover hover:scale-110 transition-transform duration-300"
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = 'https://via.placeholder.com/150?text=Image+Not+Found';
+                                                }}
+                                            />
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
+                                                <span className="text-xs text-white font-bold">Click to view</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+
+            {/* Image Modal */}
+            {selectedImage && (
+                <div 
+                    className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+                    onClick={() => setSelectedImage(null)}
+                >
+                    <div className="relative max-w-4xl max-h-[90vh]">
+                        <img 
+                            src={selectedImage} 
+                            alt="Enlarged attachment"
+                            className="w-full h-full object-contain"
+                        />
+                        <button
+                            onClick={() => setSelectedImage(null)}
+                            className="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white rounded-full p-2 transition-all"
+                            aria-label="Close image"
+                        >
+                            <XCircle size={24} />
+                        </button>
+                    </div>
+                </div>
+            )}
+        </>
     );
 };
 
 /**
- * Complaint details card with history.
+ * Complaint details card with history and image display.
  */
 const ComplaintCard = ({ complaint, history, onClose, isClosing }) => {
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    // Function to get full image URL
+    const getImageUrl = (photoPath) => {
+        if (photoPath.startsWith('http')) return photoPath;
+        const baseUrl = API_BASE_URL.replace('/api', '');
+        return `${baseUrl}/uploads/${photoPath}`;
+    };
+
     return (
-        <article
-            className="bg-white border border-slate-200 rounded-[2rem] shadow-xl shadow-slate-200/40 overflow-hidden animate-in zoom-in-95 duration-500"
-            aria-label="Complaint details"
-        >
-            {/* Header */}
-            <div className="p-8 sm:p-10 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="space-y-1">
-                    <p className="text-[11px] font-black text-indigo-500 uppercase tracking-widest">
-                        Tracking Identity
-                    </p>
-                    <h2 className="text-3xl font-black text-slate-900">{complaint.complaintId}</h2>
-                </div>
-                <div className="flex flex-col items-end gap-3">
-                    <StatusBadge status={complaint.status} />
-                    {complaint.status === 'Resolved' && (
-                        <button
-                            onClick={onClose}
-                            disabled={isClosing}
-                            className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-rose-500 bg-rose-50 hover:bg-rose-600 hover:text-white rounded-xl transition-all border border-rose-100 hover:border-rose-600 disabled:opacity-50"
-                            aria-label="Close this complaint"
-                        >
-                            <Archive size={14} aria-hidden="true" />
-                            {isClosing ? 'Closing...' : 'Close Complaint'}
-                        </button>
-                    )}
-                </div>
-            </div>
-
-            {/* Body */}
-            <div className="p-8 sm:p-10">
-                {/* Main Complaint Details */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
-                    <section className="space-y-8" aria-labelledby="details-heading">
-                        <h3 id="details-heading" className="sr-only">Complaint Details</h3>
-                        <div>
-                            <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
-                                Grievance Subject
-                            </h4>
-                            <p className="text-lg font-bold text-slate-800 mb-2">{complaint.title}</p>
-                            <p className="text-slate-500 leading-relaxed text-sm font-medium">
-                                {complaint.description}
-                            </p>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                <div className="flex items-center gap-2 text-slate-400 mb-1">
-                                    <MapPin size={14} aria-hidden="true" />
-                                    <span className="text-[10px] font-bold uppercase tracking-tight">Department</span>
-                                </div>
-                                <p className="text-xs font-bold text-slate-700">
-                                    {complaint.department?.name || 'Unassigned'}
-                                </p>
-                            </div>
-                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                <div className="flex items-center gap-2 text-slate-400 mb-1">
-                                    <Calendar size={14} aria-hidden="true" />
-                                    <span className="text-[10px] font-bold uppercase tracking-tight">Date Filed</span>
-                                </div>
-                                <p className="text-xs font-bold text-slate-700">
-                                    {new Date(complaint.createdAt).toLocaleDateString(undefined, {
-                                        year: 'numeric',
-                                        month: 'short',
-                                        day: 'numeric'
-                                    })}
-                                </p>
-                            </div>
-                        </div>
-
-                        {complaint.assignedTo && (
-                            <div className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
-                                <div className="flex items-center gap-2 text-indigo-400 mb-1">
-                                    <User size={14} />
-                                    <span className="text-[10px] font-bold uppercase tracking-tight">Assigned To</span>
-                                </div>
-                                <p className="text-xs font-bold text-indigo-700">
-                                    {complaint.assignedTo.name}
-                                </p>
-                            </div>
+        <>
+            <article
+                className="bg-white border border-slate-200 rounded-[2rem] shadow-xl shadow-slate-200/40 overflow-hidden animate-in zoom-in-95 duration-500"
+                aria-label="Complaint details"
+            >
+                {/* Header */}
+                <div className="p-8 sm:p-10 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="space-y-1">
+                        <p className="text-[11px] font-black text-indigo-500 uppercase tracking-widest">
+                            Tracking Identity
+                        </p>
+                        <h2 className="text-3xl font-black text-slate-900">{complaint.complaintId}</h2>
+                    </div>
+                    <div className="flex flex-col items-end gap-3">
+                        <StatusBadge status={complaint.status} />
+                        {complaint.status === 'Resolved' && (
+                            <button
+                                onClick={onClose}
+                                disabled={isClosing}
+                                className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-rose-500 bg-rose-50 hover:bg-rose-600 hover:text-white rounded-xl transition-all border border-rose-100 hover:border-rose-600 disabled:opacity-50"
+                                aria-label="Close this complaint"
+                            >
+                                <Archive size={14} aria-hidden="true" />
+                                {isClosing ? 'Closing...' : 'Close Complaint'}
+                            </button>
                         )}
-                    </section>
+                    </div>
+                </div>
 
-                    {/* Current Status Summary */}
-                    <section className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
-                        <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">
-                            Current Status
-                        </h4>
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm text-slate-600">Priority:</span>
-                                <span className={`text-sm font-bold px-3 py-1 rounded-full ${
-                                    complaint.priority === 'Emergency' ? 'bg-rose-100 text-rose-700' :
-                                    complaint.priority === 'High' ? 'bg-orange-100 text-orange-700' :
-                                    complaint.priority === 'Medium' ? 'bg-blue-100 text-blue-700' :
-                                    'bg-slate-100 text-slate-700'
-                                }`}>
-                                    {complaint.priority}
-                                </span>
+                {/* Body */}
+                <div className="p-8 sm:p-10">
+                    {/* Main Complaint Details */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+                        <section className="space-y-8" aria-labelledby="details-heading">
+                            <h3 id="details-heading" className="sr-only">Complaint Details</h3>
+                            <div>
+                                <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
+                                    Grievance Subject
+                                </h4>
+                                <p className="text-lg font-bold text-slate-800 mb-2">{complaint.title}</p>
+                                <p className="text-slate-500 leading-relaxed text-sm font-medium">
+                                    {complaint.description}
+                                </p>
                             </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm text-slate-600">Last Updated:</span>
-                                <span className="text-sm font-bold text-slate-700">
-                                    {new Date(complaint.updatedAt).toLocaleDateString()}
-                                </span>
-                            </div>
-                            {complaint.resolvedAt && (
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-slate-600">Resolved On:</span>
-                                    <span className="text-sm font-bold text-emerald-700">
-                                        {new Date(complaint.resolvedAt).toLocaleDateString()}
-                                    </span>
+
+                            {/* Main Complaint Attachments */}
+                            {complaint.photos && complaint.photos.length > 0 && (
+                                <div>
+                                    <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
+                                        Complaint Attachments ({complaint.photos.length})
+                                    </h4>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {complaint.photos.map((photo, index) => (
+                                            <div 
+                                                key={index}
+                                                className="relative group/image cursor-pointer rounded-lg overflow-hidden border border-slate-200 hover:border-indigo-300 transition-all"
+                                                onClick={() => setSelectedImage(getImageUrl(photo))}
+                                            >
+                                                <img 
+                                                    src={getImageUrl(photo)} 
+                                                    alt={`Complaint attachment ${index + 1}`}
+                                                    className="w-full h-32 object-cover hover:scale-110 transition-transform duration-300"
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+                                                    }}
+                                                />
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <span className="text-xs text-white font-bold">Click to view</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
-                        </div>
-                    </section>
-                </div>
 
-                {/* History Timeline Section */}
-                {history && history.length > 0 && (
-                    <section className="border-t border-slate-100 pt-8">
-                        <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-                            <Clock size={16} />
-                            <span>Complete Timeline ({history.length} {history.length === 1 ? 'update' : 'updates'})</span>
-                        </h4>
-                        
-                        <div className="space-y-1">
-                            {history.map((entry, index) => (
-                                <HistoryItem 
-                                    key={entry._id} 
-                                    entry={entry} 
-                                    isLast={index === history.length - 1}
-                                />
-                            ))}
-                        </div>
-                    </section>
-                )}
-            </div>
-        </article>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                    <div className="flex items-center gap-2 text-slate-400 mb-1">
+                                        <MapPin size={14} aria-hidden="true" />
+                                        <span className="text-[10px] font-bold uppercase tracking-tight">Department</span>
+                                    </div>
+                                    <p className="text-xs font-bold text-slate-700">
+                                        {complaint.department?.name || 'Unassigned'}
+                                    </p>
+                                </div>
+                                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                    <div className="flex items-center gap-2 text-slate-400 mb-1">
+                                        <Calendar size={14} aria-hidden="true" />
+                                        <span className="text-[10px] font-bold uppercase tracking-tight">Date Filed</span>
+                                    </div>
+                                    <p className="text-xs font-bold text-slate-700">
+                                        {new Date(complaint.createdAt).toLocaleDateString(undefined, {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        })}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {complaint.assignedTo && (
+                                <div className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+                                    <div className="flex items-center gap-2 text-indigo-400 mb-1">
+                                        <User size={14} />
+                                        <span className="text-[10px] font-bold uppercase tracking-tight">Assigned To</span>
+                                    </div>
+                                    <p className="text-xs font-bold text-indigo-700">
+                                        {complaint.assignedTo.name}
+                                    </p>
+                                </div>
+                            )}
+                        </section>
+
+                        {/* Current Status Summary */}
+                        <section className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                            <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">
+                                Current Status
+                            </h4>
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-slate-600">Priority:</span>
+                                    <span className={`text-sm font-bold px-3 py-1 rounded-full ${
+                                        complaint.priority === 'Emergency' ? 'bg-rose-100 text-rose-700' :
+                                        complaint.priority === 'High' ? 'bg-orange-100 text-orange-700' :
+                                        complaint.priority === 'Medium' ? 'bg-blue-100 text-blue-700' :
+                                        'bg-slate-100 text-slate-700'
+                                    }`}>
+                                        {complaint.priority}
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-slate-600">Last Updated:</span>
+                                    <span className="text-sm font-bold text-slate-700">
+                                        {new Date(complaint.updatedAt).toLocaleDateString()}
+                                    </span>
+                                </div>
+                                {complaint.resolvedAt && (
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm text-slate-600">Resolved On:</span>
+                                        <span className="text-sm font-bold text-emerald-700">
+                                            {new Date(complaint.resolvedAt).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </section>
+                    </div>
+
+                    {/* History Timeline Section */}
+                    {history && history.length > 0 && (
+                        <section className="border-t border-slate-100 pt-8">
+                            <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <Clock size={16} />
+                                <span>Complete Timeline ({history.length} {history.length === 1 ? 'update' : 'updates'})</span>
+                            </h4>
+                            
+                            <div className="space-y-1">
+                                {history.map((entry, index) => (
+                                    <HistoryItem 
+                                        key={entry._id} 
+                                        entry={entry} 
+                                        isLast={index === history.length - 1}
+                                    />
+                                ))}
+                            </div>
+                        </section>
+                    )}
+                </div>
+            </article>
+
+            {/* Image Modal for main complaint images */}
+            {selectedImage && (
+                <div 
+                    className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+                    onClick={() => setSelectedImage(null)}
+                >
+                    <div className="relative max-w-4xl max-h-[90vh]">
+                        <img 
+                            src={selectedImage} 
+                            alt="Enlarged attachment"
+                            className="w-full h-full object-contain"
+                        />
+                        <button
+                            onClick={() => setSelectedImage(null)}
+                            className="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white rounded-full p-2 transition-all"
+                            aria-label="Close image"
+                        >
+                            <XCircle size={24} />
+                        </button>
+                    </div>
+                </div>
+            )}
+        </>
     );
 };
 

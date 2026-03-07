@@ -16,8 +16,6 @@ const MyComplaints = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [expandedId, setExpandedId] = useState(null);
-    const [complaintDetails, setComplaintDetails] = useState({});
-    const [loadingDetails, setLoadingDetails] = useState({});
     const [viewMode, setViewMode] = useState('list');
     const [sortField, setSortField] = useState('date');
     const [sortDirection, setSortDirection] = useState('desc');
@@ -59,7 +57,9 @@ const MyComplaints = () => {
                         description: item.description,
                         attachments: item.attachments || [],
                         updatedAt: item.updatedAt,
-                        resolvedAt: item.resolvedAt
+                        resolvedAt: item.resolvedAt,
+                        history: item.history || [], // Include history from the API response
+                        assignedTo: item.assignedTo
                     }));
                     setComplaints(formattedComplaints);
                     calculateStats(formattedComplaints);
@@ -98,27 +98,11 @@ const MyComplaints = () => {
         setStats({ total, resolved, pending, inProgress, avgResolutionTime: avgTime, highPriority });
     };
 
-    const fetchComplaintDetails = async (id) => {
-        if (complaintDetails[id]) return;
-
-        setLoadingDetails(prev => ({ ...prev, [id]: true }));
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/grievanceInbox/${id}`);
-            const data = await res.json();
-            setComplaintDetails(prev => ({ ...prev, [id]: data }));
-        } catch (err) {
-            console.error("Error fetching complaint details", err);
-        } finally {
-            setLoadingDetails(prev => ({ ...prev, [id]: false }));
-        }
-    };
-
     const toggleExpand = (id) => {
         if (expandedId === id) {
             setExpandedId(null);
         } else {
             setExpandedId(id);
-            fetchComplaintDetails(id);
         }
     };
 
@@ -296,6 +280,113 @@ const MyComplaints = () => {
                 </div>
                 <p className="text-2xl font-semibold text-slate-900">{value}</p>
                 <p className="text-xs text-slate-500 mt-1">{label}</p>
+            </div>
+        );
+    };
+
+    // Helper function to render history timeline
+    const renderHistoryTimeline = (history) => {
+        if (!history || history.length === 0) {
+            return (
+                <div className="text-center py-6">
+                    <Clock3 size={24} className="text-slate-300 mx-auto mb-2" />
+                    <p className="text-sm text-slate-500">No history available for this complaint</p>
+                </div>
+            );
+        }
+
+        return (
+            <div className="space-y-4">
+                {history.map((historyItem, index) => (
+                    <div key={index} className="relative pl-6 pb-4 border-l-2 border-indigo-200 last:border-l-2 last:pb-0">
+                        {/* Timeline dot */}
+                        <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-white border-2 border-indigo-500"></div>
+                        
+                        <div className="mb-1 flex items-center gap-2 flex-wrap">
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium ${
+                                historyItem.status ? getStatusConfig(historyItem.status).bg : 'bg-slate-100'
+                            } ${
+                                historyItem.status ? getStatusConfig(historyItem.status).text : 'text-slate-600'
+                            }`}>
+                                {historyItem.status ? (
+                                    <>
+                                        {React.createElement(getStatusConfig(historyItem.status).icon, { size: 10 })}
+                                        <span>{historyItem.status}</span>
+                                    </>
+                                ) : (
+                                    'Update'
+                                )}
+                            </span>
+                            <span className="text-xs text-slate-400">
+                                {new Date(historyItem.createdAt).toLocaleString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}
+                            </span>
+                        </div>
+                        
+                        {/* Updated By Info */}
+                        {historyItem.updatedBy && (
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center">
+                                    <UserCircle size={12} className="text-slate-500" />
+                                </div>
+                                <span className="text-xs font-medium text-slate-700">
+                                    {typeof historyItem.updatedBy === 'object' 
+                                        ? historyItem.updatedBy.name 
+                                        : 'System'}
+                                    {historyItem.updatedBy?.role && (
+                                        <span className="text-slate-400 ml-1">
+                                            ({historyItem.updatedBy.role})
+                                        </span>
+                                    )}
+                                </span>
+                            </div>
+                        )}
+                        
+                        {/* Title change */}
+                        {historyItem.title && (
+                            <div className="mb-1 text-sm">
+                                <span className="text-slate-500">Title: </span>
+                                <span className="font-medium text-slate-700">{historyItem.title}</span>
+                            </div>
+                        )}
+                        
+                        {/* Description change */}
+                        {historyItem.description && (
+                            <div className="mb-1 text-sm">
+                                <span className="text-slate-500">Description: </span>
+                                <span className="text-slate-700">{historyItem.description.substring(0, 100)}</span>
+                                {historyItem.description.length > 100 && '...'}
+                            </div>
+                        )}
+                        
+                        {/* Photos */}
+                        {historyItem.photos && historyItem.photos.length > 0 && (
+                            <div className="mt-2">
+                                <span className="text-xs text-slate-500">Photos added: </span>
+                                <div className="flex gap-1 mt-1">
+                                    {historyItem.photos.map((photo, idx) => (
+                                        <div key={idx} className="w-8 h-8 bg-slate-100 rounded border border-slate-200 flex items-center justify-center">
+                                            <ImageIcon size={12} className="text-slate-400" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        
+                        {/* Charges */}
+                        {historyItem.charges !== undefined && historyItem.charges > 0 && (
+                            <div className="mt-1 text-sm">
+                                <span className="text-slate-500">Charges: </span>
+                                <span className="font-medium text-slate-700">₹{historyItem.charges}</span>
+                            </div>
+                        )}
+                    </div>
+                ))}
             </div>
         );
     };
@@ -569,8 +660,6 @@ const MyComplaints = () => {
                                         const StatusIcon = getStatusConfig(item.status).icon;
                                         const PriorityIcon = getPriorityConfig(item.priority).icon;
                                         const isExpanded = expandedId === item.id;
-                                        const details = complaintDetails[item.id];
-                                        const loadingDetail = loadingDetails[item.id];
                                         const priorityConfig = getPriorityConfig(item.priority);
                                         const statusConfig = getStatusConfig(item.status);
                                         return (
@@ -600,6 +689,12 @@ const MyComplaints = () => {
                                                                         <span className="flex items-center gap-1 flex-shrink-0">
                                                                             <Paperclip size={12} />
                                                                             {item.attachments?.length || 1}
+                                                                        </span>
+                                                                    )}
+                                                                    {item.history && item.history.length > 0 && (
+                                                                        <span className="flex items-center gap-1 flex-shrink-0 text-indigo-500">
+                                                                            <Clock size={12} />
+                                                                            {item.history.length} updates
                                                                         </span>
                                                                     )}
                                                                 </div>
@@ -655,208 +750,208 @@ const MyComplaints = () => {
                                                     <tr>
                                                         <td colSpan="6" className="p-0">
                                                             <div className="bg-slate-50/70 border-y border-indigo-100">
-                                                                {loadingDetail ? (
-                                                                    <div className="py-8 text-center">
-                                                                        <RefreshCw size={20} className="text-indigo-500 animate-spin mx-auto mb-2" />
-                                                                        <p className="text-sm text-slate-500">Loading details...</p>
-                                                                    </div>
-                                                                ) : (
-                                                                    <div className="p-4 sm:p-6">
-                                                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                                                            {/* Left - Description & Attachments */}
-                                                                            <div className="lg:col-span-2 space-y-5">
+                                                                <div className="p-4 sm:p-6">
+                                                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                                                        {/* Left - Description & Attachments */}
+                                                                        <div className="lg:col-span-2 space-y-5">
+                                                                            <div>
+                                                                                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                                                                    <span className="w-1 h-4 bg-indigo-400 rounded-full"></span>
+                                                                                    Description
+                                                                                </h4>
+                                                                                <div className="bg-white rounded-lg border border-slate-200 p-4 text-sm text-slate-600 leading-relaxed max-h-60 overflow-y-auto">
+                                                                                    {item.description}
+                                                                                </div>
+                                                                            </div>
+
+                                                                            {/* Complaint History Section */}
+                                                                            <div>
+                                                                                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                                                                    <span className="w-1 h-4 bg-purple-400 rounded-full"></span>
+                                                                                    History Timeline
+                                                                                </h4>
+                                                                                <div className="bg-white rounded-lg border border-slate-200 p-4 max-h-80 overflow-y-auto">
+                                                                                    {renderHistoryTimeline(item.history)}
+                                                                                </div>
+                                                                            </div>
+
+                                                                            {item.attachments?.length > 0 && (
                                                                                 <div>
                                                                                     <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
                                                                                         <span className="w-1 h-4 bg-indigo-400 rounded-full"></span>
-                                                                                        Description
+                                                                                        Attachments ({item.attachments.length})
                                                                                     </h4>
-                                                                                    <div className="bg-white rounded-lg border border-slate-200 p-4 text-sm text-slate-600 leading-relaxed max-h-60 overflow-y-auto">
-                                                                                        {item.description}
+                                                                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                                                                        {item.attachments.map((attachment, index) => {
+                                                                                            const fullImageUrl = getFullImageUrl(attachment);
+                                                                                            const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(attachment);
+
+                                                                                            return (
+                                                                                                <div key={index} className="bg-white rounded-lg border border-slate-200 overflow-hidden group hover:shadow-md transition-all">
+                                                                                                    {isImage ? (
+                                                                                                        <div className="relative aspect-video">
+                                                                                                            <img
+                                                                                                                src={fullImageUrl}
+                                                                                                                alt={`Attachment ${index + 1}`}
+                                                                                                                className="w-full h-full object-cover cursor-pointer"
+                                                                                                                onClick={(e) => {
+                                                                                                                    e.stopPropagation();
+                                                                                                                    setSelectedImage(fullImageUrl);
+                                                                                                                }}
+                                                                                                                onError={(e) => {
+                                                                                                                    e.target.onerror = null;
+                                                                                                                    e.target.src = 'https://via.placeholder.com/300x200?text=Error';
+                                                                                                                }}
+                                                                                                            />
+                                                                                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                                                                                                <span className="text-white text-xs font-medium bg-black/50 px-2 py-1 rounded">
+                                                                                                                    View
+                                                                                                                </span>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    ) : (
+                                                                                                        <div className="p-3 flex flex-col items-center gap-2">
+                                                                                                            <FileText size={24} className="text-slate-400" />
+                                                                                                            <span className="text-xs text-slate-500 truncate w-full text-center">
+                                                                                                                {attachment.split('/').pop()}
+                                                                                                            </span>
+                                                                                                            <a
+                                                                                                                href={fullImageUrl}
+                                                                                                                download
+                                                                                                                target="_blank"
+                                                                                                                rel="noopener noreferrer"
+                                                                                                                className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                                                                                                                onClick={(e) => e.stopPropagation()}
+                                                                                                            >
+                                                                                                                Download
+                                                                                                            </a>
+                                                                                                        </div>
+                                                                                                    )}
+                                                                                                </div>
+                                                                                            );
+                                                                                        })}
                                                                                     </div>
                                                                                 </div>
+                                                                            )}
+                                                                        </div>
 
-                                                                                {item.attachments?.length > 0 && (
-                                                                                    <div>
-                                                                                        <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                                                                            <span className="w-1 h-4 bg-indigo-400 rounded-full"></span>
-                                                                                            Attachments ({item.attachments.length})
-                                                                                        </h4>
-                                                                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                                                                            {item.attachments.map((attachment, index) => {
-                                                                                                const fullImageUrl = getFullImageUrl(attachment);
-                                                                                                const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(attachment);
-
-                                                                                                return (
-                                                                                                    <div key={index} className="bg-white rounded-lg border border-slate-200 overflow-hidden group hover:shadow-md transition-all">
-                                                                                                        {isImage ? (
-                                                                                                            <div className="relative aspect-video">
-                                                                                                                <img
-                                                                                                                    src={fullImageUrl}
-                                                                                                                    alt={`Attachment ${index + 1}`}
-                                                                                                                    className="w-full h-full object-cover cursor-pointer"
-                                                                                                                    onClick={(e) => {
-                                                                                                                        e.stopPropagation();
-                                                                                                                        setSelectedImage(fullImageUrl);
-                                                                                                                    }}
-                                                                                                                    onError={(e) => {
-                                                                                                                        e.target.onerror = null;
-                                                                                                                        e.target.src = 'https://via.placeholder.com/300x200?text=Error';
-                                                                                                                    }}
-                                                                                                                />
-                                                                                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                                                                                                    <span className="text-white text-xs font-medium bg-black/50 px-2 py-1 rounded">
-                                                                                                                        View
-                                                                                                                    </span>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        ) : (
-                                                                                                            <div className="p-3 flex flex-col items-center gap-2">
-                                                                                                                <FileText size={24} className="text-slate-400" />
-                                                                                                                <span className="text-xs text-slate-500 truncate w-full text-center">
-                                                                                                                    {attachment.split('/').pop()}
-                                                                                                                </span>
-                                                                                                                <a
-                                                                                                                    href={fullImageUrl}
-                                                                                                                    download
-                                                                                                                    target="_blank"
-                                                                                                                    rel="noopener noreferrer"
-                                                                                                                    className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
-                                                                                                                    onClick={(e) => e.stopPropagation()}
-                                                                                                                >
-                                                                                                                    Download
-                                                                                                                </a>
-                                                                                                            </div>
-                                                                                                        )}
-                                                                                                    </div>
-                                                                                                );
-                                                                                            })}
+                                                                        {/* Right - Metadata */}
+                                                                        <div className="space-y-4">
+                                                                            <div className="bg-white rounded-lg border border-slate-200 p-4">
+                                                                                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                                                                    <span className="w-1 h-4 bg-emerald-400 rounded-full"></span>
+                                                                                    Timeline
+                                                                                </h4>
+                                                                                <div className="space-y-3">
+                                                                                    <div className="flex items-start gap-2">
+                                                                                        <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                                                            <Calendar size={10} className="text-indigo-600" />
+                                                                                        </div>
+                                                                                        <div className="min-w-0">
+                                                                                            <p className="text-xs text-slate-500">Created</p>
+                                                                                            <p className="text-sm font-medium text-slate-700">
+                                                                                                {new Date(item.fullDate).toLocaleDateString('en-US', {
+                                                                                                    month: 'short', day: 'numeric', year: 'numeric',
+                                                                                                    hour: '2-digit', minute: '2-digit'
+                                                                                                })}
+                                                                                            </p>
                                                                                         </div>
                                                                                     </div>
-                                                                                )}
-                                                                            </div>
-
-                                                                            {/* Right - Metadata */}
-                                                                            <div className="space-y-4">
-                                                                                <div className="bg-white rounded-lg border border-slate-200 p-4">
-                                                                                    <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                                                                        <span className="w-1 h-4 bg-emerald-400 rounded-full"></span>
-                                                                                        Timeline
-                                                                                    </h4>
-                                                                                    <div className="space-y-3">
+                                                                                    {item.updatedAt && (
                                                                                         <div className="flex items-start gap-2">
-                                                                                            <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                                                                <Calendar size={10} className="text-indigo-600" />
+                                                                                            <div className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                                                                <Clock3 size={10} className="text-amber-600" />
                                                                                             </div>
                                                                                             <div className="min-w-0">
-                                                                                                <p className="text-xs text-slate-500">Created</p>
+                                                                                                <p className="text-xs text-slate-500">Last Updated</p>
                                                                                                 <p className="text-sm font-medium text-slate-700">
-                                                                                                    {new Date(item.fullDate).toLocaleDateString('en-US', {
+                                                                                                    {new Date(item.updatedAt).toLocaleDateString('en-US', {
                                                                                                         month: 'short', day: 'numeric', year: 'numeric',
                                                                                                         hour: '2-digit', minute: '2-digit'
                                                                                                     })}
                                                                                                 </p>
                                                                                             </div>
                                                                                         </div>
-                                                                                        {item.updatedAt && (
-                                                                                            <div className="flex items-start gap-2">
-                                                                                                <div className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                                                                    <Clock3 size={10} className="text-amber-600" />
-                                                                                                </div>
-                                                                                                <div className="min-w-0">
-                                                                                                    <p className="text-xs text-slate-500">Last Updated</p>
-                                                                                                    <p className="text-sm font-medium text-slate-700">
-                                                                                                        {new Date(item.updatedAt).toLocaleDateString('en-US', {
-                                                                                                            month: 'short', day: 'numeric', year: 'numeric',
-                                                                                                            hour: '2-digit', minute: '2-digit'
-                                                                                                        })}
-                                                                                                    </p>
-                                                                                                </div>
+                                                                                    )}
+                                                                                    {item.resolvedAt && (
+                                                                                        <div className="flex items-start gap-2">
+                                                                                            <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                                                                <CheckCircle size={10} className="text-emerald-600" />
                                                                                             </div>
-                                                                                        )}
-                                                                                        {item.resolvedAt && (
-                                                                                            <div className="flex items-start gap-2">
-                                                                                                <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                                                                    <CheckCircle size={10} className="text-emerald-600" />
-                                                                                                </div>
-                                                                                                <div className="min-w-0">
-                                                                                                    <p className="text-xs text-slate-500">Resolved</p>
-                                                                                                    <p className="text-sm font-medium text-slate-700">
-                                                                                                        {new Date(item.resolvedAt).toLocaleDateString('en-US', {
-                                                                                                            month: 'short', day: 'numeric', year: 'numeric',
-                                                                                                            hour: '2-digit', minute: '2-digit'
-                                                                                                        })}
-                                                                                                    </p>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        )}
-                                                                                    </div>
-                                                                                </div>
-
-                                                                                <div className="bg-white rounded-lg border border-slate-200 p-4">
-                                                                                    <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                                                                        <span className="w-1 h-4 bg-purple-400 rounded-full"></span>
-                                                                                        Assignment
-                                                                                    </h4>
-                                                                                    <div className="space-y-2">
-                                                                                        <div>
-                                                                                            <p className="text-xs text-slate-500">Department</p>
-                                                                                            <p className="text-sm font-medium text-slate-700">
-                                                                                                {item.department}
-                                                                                            </p>
-                                                                                        </div>
-                                                                                        <div>
-                                                                                            <p className="text-xs text-slate-500">Category</p>
-                                                                                            <p className="text-sm font-medium text-slate-700">
-                                                                                                {item.category}
-                                                                                            </p>
-                                                                                        </div>
-                                                                                        {details?.assignedTo && (
-                                                                                            <div>
-                                                                                                <p className="text-xs text-slate-500">Assigned To</p>
+                                                                                            <div className="min-w-0">
+                                                                                                <p className="text-xs text-slate-500">Resolved</p>
                                                                                                 <p className="text-sm font-medium text-slate-700">
-                                                                                                    {details.assignedTo.name}
+                                                                                                    {new Date(item.resolvedAt).toLocaleDateString('en-US', {
+                                                                                                        month: 'short', day: 'numeric', year: 'numeric',
+                                                                                                        hour: '2-digit', minute: '2-digit'
+                                                                                                    })}
                                                                                                 </p>
                                                                                             </div>
+                                                                                        </div>
+                                                                                    )}
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="bg-white rounded-lg border border-slate-200 p-4">
+                                                                                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                                                                    <span className="w-1 h-4 bg-purple-400 rounded-full"></span>
+                                                                                    Assignment
+                                                                                </h4>
+                                                                                <div className="space-y-2">
+                                                                                    <div>
+                                                                                        <p className="text-xs text-slate-500">Department</p>
+                                                                                        <p className="text-sm font-medium text-slate-700">
+                                                                                            {item.department}
+                                                                                        </p>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <p className="text-xs text-slate-500">Category</p>
+                                                                                        <p className="text-sm font-medium text-slate-700">
+                                                                                            {item.category}
+                                                                                        </p>
+                                                                                    </div>
+                                                                                    {item.assignedTo && (
+                                                                                        <div>
+                                                                                            <p className="text-xs text-slate-500">Assigned To</p>
+                                                                                            <p className="text-sm font-medium text-slate-700">
+                                                                                                {typeof item.assignedTo === 'object' ? item.assignedTo.name : 'Not assigned'}
+                                                                                            </p>
+                                                                                        </div>
+                                                                                    )}
+                                                                                </div>
+                                                                            </div>
+
+                                                                            {/* History Summary */}
+                                                                            {item.history && item.history.length > 0 && (
+                                                                                <div className="bg-white rounded-lg border border-slate-200 p-4">
+                                                                                    <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                                                                        <span className="w-1 h-4 bg-blue-400 rounded-full"></span>
+                                                                                        History Summary
+                                                                                    </h4>
+                                                                                    <div className="space-y-1">
+                                                                                        <p className="text-sm text-slate-700">
+                                                                                            Total updates: <span className="font-medium">{item.history.length}</span>
+                                                                                        </p>
+                                                                                        {item.history.length > 0 && (
+                                                                                            <>
+                                                                                                <p className="text-sm text-slate-700">
+                                                                                                    First update: <span className="font-medium">
+                                                                                                        {new Date(item.history[0].createdAt).toLocaleDateString()}
+                                                                                                    </span>
+                                                                                                </p>
+                                                                                                <p className="text-sm text-slate-700">
+                                                                                                    Latest update: <span className="font-medium">
+                                                                                                        {new Date(item.history[item.history.length - 1].createdAt).toLocaleDateString()}
+                                                                                                    </span>
+                                                                                                </p>
+                                                                                            </>
                                                                                         )}
                                                                                     </div>
                                                                                 </div>
-
-                                                                                {details?.student && (
-                                                                                    <div className="bg-white rounded-lg border border-slate-200 p-4">
-                                                                                        <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                                                                            <span className="w-1 h-4 bg-amber-400 rounded-full"></span>
-                                                                                            Your Info
-                                                                                        </h4>
-                                                                                        <div className="space-y-2">
-                                                                                            {details.student.email && (
-                                                                                                <div className="flex items-center gap-2">
-                                                                                                    <Mail size={14} className="text-slate-400 flex-shrink-0" />
-                                                                                                    <div className="min-w-0">
-                                                                                                        <p className="text-xs text-slate-500">Email</p>
-                                                                                                        <p className="text-sm font-medium text-slate-700 truncate">
-                                                                                                            {details.student.email}
-                                                                                                        </p>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            )}
-                                                                                            {details.student.phone && (
-                                                                                                <div className="flex items-center gap-2">
-                                                                                                    <Phone size={14} className="text-slate-400 flex-shrink-0" />
-                                                                                                    <div className="min-w-0">
-                                                                                                        <p className="text-xs text-slate-500">Phone</p>
-                                                                                                        <p className="text-sm font-medium text-slate-700">
-                                                                                                            {details.student.phone}
-                                                                                                        </p>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            )}
-                                                                                        </div>
-                                                                                    </div>
-                                                                                )}
-                                                                            </div>
+                                                                            )}
                                                                         </div>
                                                                     </div>
-                                                                )}
+                                                                </div>
                                                             </div>
                                                         </td>
                                                     </tr>
