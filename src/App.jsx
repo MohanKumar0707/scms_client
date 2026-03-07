@@ -18,6 +18,7 @@ import AssignComplaints from "./pages/admin/AssignComplaints";
 import RaiseComplaint from "./pages/student/RaiseComplaint";
 import MyComplaints from "./pages/student/MyComplaints";
 import ComplaintStatusTracker from "./pages/student/ComplaintStatusTracker";
+import ComplaintsHistory from "./pages/student/ComplaintsHistory";
 
 // Staff Routes
 import AssignedComplaints from "./pages/staff/AssignedComplaint";
@@ -46,6 +47,8 @@ function App() {
                     <Route path="raise-complaint" element={<RaiseComplaint />} />
                     <Route path="my-complaints" element={<MyComplaints />} />
                     <Route path="status-tracker" element={<ComplaintStatusTracker />} />
+                    <Route path="complaint-history" element={<ComplaintsHistory />} />
+
                     
 
                     {/* Staff Routes */}
