@@ -590,7 +590,7 @@ const MyComplaints = () => {
                                                                 </div>
                                                                 <div className="flex items-center gap-3 text-xs text-slate-500">
                                                                     <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded flex-shrink-0">
-                                                                        {item.id.slice(-8)}
+                                                                        {item.id.slice(-9)}
                                                                     </span>
                                                                     <span className="flex items-center gap-1 flex-shrink-0">
                                                                         <Clock3 size={12} />

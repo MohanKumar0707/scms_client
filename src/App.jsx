@@ -13,6 +13,7 @@ import Department from "./pages/admin/Department";
 import Category from "./pages/admin/Category";
 import GrievanceInbox from "./pages/admin/GrievanceInbox";
 import AssignComplaints from "./pages/admin/AssignComplaints";
+import ComplaintReports from "./pages/admin/ComplaintReports";
 
 // Student Routes
 import RaiseComplaint from "./pages/student/RaiseComplaint";
@@ -34,8 +35,8 @@ function App() {
                 {/* Common Routes */}
                 <Route path="/" element={<Login />} />
                 <Route path="/layout/*" element={<Layout />}>
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="profile-settings" element={<Profile />} />
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="profile-settings" element={<Profile />} />
 
                     {/* Admin Routes */}
                     <Route path="userManagement" element={<UserManage />} />
@@ -43,6 +44,7 @@ function App() {
                     <Route path="categories" element={<Category />} />
                     <Route path="grievance-inbox" element={<GrievanceInbox />} />
                     <Route path="assign-complaints" element={<AssignComplaints />} />
+                    <Route path="complaint-reports" element={<ComplaintReports />} />
 
                     {/* Student Routes */}
                     <Route path="raise-complaint" element={<RaiseComplaint />} />
@@ -50,12 +52,11 @@ function App() {
                     <Route path="status-tracker" element={<ComplaintStatusTracker />} />
                     <Route path="complaint-history" element={<ComplaintsHistory />} />
 
-                    
-
                     {/* Staff Routes */}
                     <Route path="assigned" element={<AssignedComplaints />} />
                     <Route path="update-status" element={<UpdateComplaints />} />
                     <Route path="completed" element={<CompletedComplaints />} />
+
                 </Route>
             </Routes>
         </Router>

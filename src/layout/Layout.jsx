@@ -66,9 +66,9 @@ function Layout() {
             {
                 group: "Complaint Management",
                 items: [
-                    { name: "Grievance Inbox", path: "/layout/grievance-inbox", icon: <MessageSquare size={20} /> },
                     { name: "Assign Complaints", path: "/layout/assign-complaints", icon: <UserPlus size={20} /> },
-                    { name: "Resolved Complaints", path: "/layout/resolved", icon: <CheckCircle2 size={20} /> }
+                    { name: "Grievance Inbox", path: "/layout/grievance-inbox", icon: <MessageSquare size={20} /> },
+                    { name: "Complaint Reports", path: "/layout/complaint-reports", icon: <CheckCircle2 size={20} /> }
                 ]
             }
         ]

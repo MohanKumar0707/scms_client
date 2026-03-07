@@ -41,7 +41,6 @@ const MyComplaints = () => {
                 setLoading(true);
                 const res = await fetch(`${API_BASE_URL}/api/complaintHistory/my-complaints/${registerNo}`);
                 const data = await res.json();
-
                 if (res.ok) {
                     const formattedComplaints = data.map(item => ({
                         id: item.complaintId,
@@ -58,7 +57,7 @@ const MyComplaints = () => {
                         attachments: item.attachments || [],
                         updatedAt: item.updatedAt,
                         resolvedAt: item.resolvedAt,
-                        history: item.history || [], // Include history from the API response
+                        history: item.history || [],
                         assignedTo: item.assignedTo
                     }));
                     setComplaints(formattedComplaints);
@@ -82,8 +81,6 @@ const MyComplaints = () => {
         const pending = data.filter(c => c.status === 'Pending').length;
         const inProgress = data.filter(c => c.status === 'In Progress').length;
         const highPriority = data.filter(c => c.priority === 'High' || c.priority === 'Emergency').length;
-
-        // Calculate average resolution time (in hours)
         const resolvedComplaints = data.filter(c => c.status === 'Resolved' && c.resolvedAt);
         let avgTime = 0;
         if (resolvedComplaints.length > 0) {
@@ -94,7 +91,6 @@ const MyComplaints = () => {
             }, 0);
             avgTime = Math.round((totalTime / resolvedComplaints.length) / (1000 * 60 * 60 * 24) * 10) / 10;
         }
-
         setStats({ total, resolved, pending, inProgress, avgResolutionTime: avgTime, highPriority });
     };
 
@@ -259,7 +255,6 @@ const MyComplaints = () => {
             <ChevronDown size={14} className="text-indigo-600" />;
     };
 
-    // Stats Cards Component
     const StatsCard = ({ label, value, icon: Icon, color, subtext }) => {
         const colors = {
             indigo: 'from-indigo-500 to-indigo-600',
@@ -284,8 +279,8 @@ const MyComplaints = () => {
         );
     };
 
-    // Helper function to render history timeline
     const renderHistoryTimeline = (history) => {
+
         if (!history || history.length === 0) {
             return (
                 <div className="text-center py-6">
@@ -301,13 +296,10 @@ const MyComplaints = () => {
                     <div key={index} className="relative pl-6 pb-4 border-l-2 border-indigo-200 last:border-l-2 last:pb-0">
                         {/* Timeline dot */}
                         <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-white border-2 border-indigo-500"></div>
-                        
                         <div className="mb-1 flex items-center gap-2 flex-wrap">
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium ${
-                                historyItem.status ? getStatusConfig(historyItem.status).bg : 'bg-slate-100'
-                            } ${
-                                historyItem.status ? getStatusConfig(historyItem.status).text : 'text-slate-600'
-                            }`}>
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium ${historyItem.status ? getStatusConfig(historyItem.status).bg : 'bg-slate-100'
+                                } ${historyItem.status ? getStatusConfig(historyItem.status).text : 'text-slate-600'
+                                }`}>
                                 {historyItem.status ? (
                                     <>
                                         {React.createElement(getStatusConfig(historyItem.status).icon, { size: 10 })}
@@ -327,7 +319,7 @@ const MyComplaints = () => {
                                 })}
                             </span>
                         </div>
-                        
+
                         {/* Updated By Info */}
                         {historyItem.updatedBy && (
                             <div className="flex items-center gap-2 mb-2">
@@ -335,8 +327,8 @@ const MyComplaints = () => {
                                     <UserCircle size={12} className="text-slate-500" />
                                 </div>
                                 <span className="text-xs font-medium text-slate-700">
-                                    {typeof historyItem.updatedBy === 'object' 
-                                        ? historyItem.updatedBy.name 
+                                    {typeof historyItem.updatedBy === 'object'
+                                        ? historyItem.updatedBy.name
                                         : 'System'}
                                     {historyItem.updatedBy?.role && (
                                         <span className="text-slate-400 ml-1">
@@ -346,7 +338,7 @@ const MyComplaints = () => {
                                 </span>
                             </div>
                         )}
-                        
+
                         {/* Title change */}
                         {historyItem.title && (
                             <div className="mb-1 text-sm">
@@ -354,7 +346,7 @@ const MyComplaints = () => {
                                 <span className="font-medium text-slate-700">{historyItem.title}</span>
                             </div>
                         )}
-                        
+
                         {/* Description change */}
                         {historyItem.description && (
                             <div className="mb-1 text-sm">
@@ -363,7 +355,7 @@ const MyComplaints = () => {
                                 {historyItem.description.length > 100 && '...'}
                             </div>
                         )}
-                        
+
                         {/* Photos */}
                         {historyItem.photos && historyItem.photos.length > 0 && (
                             <div className="mt-2">
@@ -377,7 +369,7 @@ const MyComplaints = () => {
                                 </div>
                             </div>
                         )}
-                        
+
                         {/* Charges */}
                         {historyItem.charges !== undefined && historyItem.charges > 0 && (
                             <div className="mt-1 text-sm">
@@ -679,7 +671,7 @@ const MyComplaints = () => {
                                                                 </div>
                                                                 <div className="flex items-center gap-3 text-xs text-slate-500">
                                                                     <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded flex-shrink-0">
-                                                                        {item.id.slice(-8)}
+                                                                        {item.id.slice(-9)}
                                                                     </span>
                                                                     <span className="flex items-center gap-1 flex-shrink-0">
                                                                         <Clock3 size={12} />
@@ -770,7 +762,7 @@ const MyComplaints = () => {
                                                                                     <span className="w-1 h-4 bg-purple-400 rounded-full"></span>
                                                                                     History Timeline
                                                                                 </h4>
-                                                                                <div className="bg-white rounded-lg border border-slate-200 p-4 max-h-80 overflow-y-auto">
+                                                                                <div className="bg-white rounded-lg border border-slate-200 p-4 max-h-96 overflow-y-auto">
                                                                                     {renderHistoryTimeline(item.history)}
                                                                                 </div>
                                                                             </div>

@@ -45,6 +45,8 @@ const AssignedComplaint = () => {
                 const res = await fetch(`${API_BASE_URL}/api/staff/assigned/${registerNo}`);
                 const data = await res.json();
 
+                console.log(data)
+
                 if (res.ok) {
                     const formattedComplaints = data.map(item => ({
                         id: item._id,
@@ -55,6 +57,7 @@ const AssignedComplaint = () => {
                         fullDate: new Date(item.createdAt),
                         priority: item.priority,
                         studentName: item.student?.name || "Unknown",
+                        registeNo: item.student?.registeNo || "Unknown",
                         department: item.department?.name || "Not Assigned",
                         hasAttachments: item.attachments?.length > 0,
                         description: item.description,
@@ -789,24 +792,24 @@ const AssignedComplaint = () => {
                                                                                             Student Info
                                                                                         </h4>
                                                                                         <div className="space-y-2">
-                                                                                            {item.student.email && (
+                                                                                            {item.student.registerNo && (
                                                                                                 <div className="flex items-center gap-2">
-                                                                                                    <Mail size={14} className="text-slate-400 flex-shrink-0" />
+                                                                                                    <User size={14} className="text-slate-400 flex-shrink-0" />
                                                                                                     <div className="min-w-0">
-                                                                                                        <p className="text-xs text-slate-500">Email</p>
+                                                                                                        <p className="text-xs text-slate-500">Register No</p>
                                                                                                         <p className="text-sm font-medium text-slate-700 truncate">
-                                                                                                            {item.student.email}
+                                                                                                            {item.student.registerNo}
                                                                                                         </p>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             )}
-                                                                                            {item.student.phone && (
+                                                                                            {item.student.name && (
                                                                                                 <div className="flex items-center gap-2">
-                                                                                                    <Phone size={14} className="text-slate-400 flex-shrink-0" />
+                                                                                                    <User size={14} className="text-slate-400 flex-shrink-0" />
                                                                                                     <div className="min-w-0">
-                                                                                                        <p className="text-xs text-slate-500">Phone</p>
+                                                                                                        <p className="text-xs text-slate-500">Name</p>
                                                                                                         <p className="text-sm font-medium text-slate-700">
-                                                                                                            {item.student.phone}
+                                                                                                            {item.student.name}
                                                                                                         </p>
                                                                                                     </div>
                                                                                                 </div>
