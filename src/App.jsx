@@ -23,6 +23,7 @@ import ComplaintsHistory from "./pages/student/ComplaintsHistory";
 // Staff Routes
 import AssignedComplaints from "./pages/staff/AssignedComplaint";
 import UpdateComplaints from "./pages/staff/UpdateComplaints";
+import CompletedComplaints from "./pages/staff/CompletedComplaints";
 
 function App() {
 
@@ -54,6 +55,7 @@ function App() {
                     {/* Staff Routes */}
                     <Route path="assigned" element={<AssignedComplaints />} />
                     <Route path="update-status" element={<UpdateComplaints />} />
+                    <Route path="completed" element={<CompletedComplaints />} />
                 </Route>
             </Routes>
         </Router>
