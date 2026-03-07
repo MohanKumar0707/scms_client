@@ -58,6 +58,7 @@ const priorityStyles = {
 };
 
 function Dashboard() {
+
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [stats, setStats] = useState(null);
